@@ -1,0 +1,80 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Lora:ital,wght@0,400..700;1,400..700&family=JetBrains+Mono:wght@400;500&display=swap');
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-serif: "Lora", Georgia, serif;
+  --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, monospace;
+
+  --color-brand-bg: #1B1A18;
+  --color-brand-bg-sec: #242220;
+  --color-brand-card: #2A2724;
+  --color-brand-accent: #D97A5A;
+  --color-brand-accent-hover: #E58B6C;
+  --color-brand-text-primary: #F4F1EC;
+  --color-brand-text-secondary: #B8B2AA;
+  --color-brand-placeholder: #7E7871;
+  --color-brand-border: rgba(255, 255, 255, 0.06);
+  --color-brand-success: #53C28B;
+  --color-brand-warning: #D7A657;
+  --color-brand-error: #E26868;
+}
+
+/* Base resets & overall design system theme overrides */
+html, body {
+  background-color: #1B1A18;
+  color: #F4F1EC;
+  font-family: var(--font-sans);
+}
+
+.serif-title {
+  font-family: var(--font-serif);
+}
+
+.premium-glass {
+  background-color: rgba(42, 39, 36, 0.4);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fade-in-up {
+  animation: fadeInUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+/* Custom thin styled scrollbars to look extremely tidy */
+::-webkit-scrollbar {
+  width: 5px;
+  height: 5px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 99px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.scrollbar-none::-webkit-scrollbar {
+  display: none;
+}
+.scrollbar-none {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}

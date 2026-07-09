@@ -1,0 +1,6 @@
+{
+  "name": "AI Chat Assistant",
+  "description": "A beautiful, fully functional real-time chat workspace modeled after Gemini and GPT chat with durable side-panel history management, custom AI personas, and complete message streaming.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
