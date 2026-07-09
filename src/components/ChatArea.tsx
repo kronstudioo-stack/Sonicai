@@ -56,7 +56,7 @@ export default function ChatArea({
 }: ChatAreaProps) {
   const [input, setInput] = useState('');
   const [showSettings, setShowSettings] = useState(false);
-  const [activeModel, setActiveModel] = useState<'Gemini-3.5-Flash' | 'Gemini-3.1-Flash-Lite'>('Gemini-3.5-Flash');
+  const [activeModel, setActiveModel] = useState<'Gemini-3.5-Flash' | 'Gemini-3.1-Flash-Lite' | 'Llama-3.3-70B' | 'Llama-3.1-8B'>('Gemini-3.5-Flash');
   const [showModelDropdown, setShowModelDropdown] = useState(false);
   const [isRecording, setIsRecording] = useState(false);
   const [attachedFiles, setAttachedFiles] = useState<AttachedFile[]>([]);
@@ -88,7 +88,11 @@ export default function ChatArea({
     const mappedModel = 
       activeModel === 'Gemini-3.5-Flash' 
         ? 'gemini-3.5-flash' 
-        : 'gemini-3.1-flash-lite';
+        : activeModel === 'Gemini-3.1-Flash-Lite'
+          ? 'gemini-3.1-flash-lite'
+          : activeModel === 'Llama-3.3-70B'
+            ? 'llama-3.3-70b-versatile'
+            : 'llama-3.1-8b-instant';
     onSendMessage(finalMessage, isDeepThink, mappedModel);
     setInput('');
     setAttachedFiles([]);
@@ -205,26 +209,47 @@ export default function ChatArea({
                 <span>
                   {activeModel === 'Gemini-3.5-Flash' 
                     ? 'Gemini 3.5 Flash' 
-                    : 'Gemini 3.1 Flash Lite'}
+                    : activeModel === 'Gemini-3.1-Flash-Lite'
+                      ? 'Gemini 3.1 Flash Lite'
+                      : activeModel === 'Llama-3.3-70B'
+                        ? 'Llama 3.3 70B'
+                        : 'Llama 3.1 8B'}
                 </span>
                 <ChevronDown size={10} className="opacity-60" />
               </button>
 
               {showModelDropdown && (
-                <div className="absolute left-0 mt-2 w-56 rounded-2xl bg-[#101815] border border-white/5 p-2 shadow-xl z-30 animate-fade-in-up">
+                <div className="absolute left-0 mt-2 w-64 rounded-2xl bg-[#101815] border border-white/5 p-2 shadow-xl z-30 animate-fade-in-up max-h-[300px] overflow-y-auto">
+                  <div className="px-2 py-1 text-[9px] font-bold text-[#53C28B] uppercase tracking-wider opacity-60">Gemini Models</div>
                   <button 
                     onClick={() => { setActiveModel('Gemini-3.5-Flash'); setShowModelDropdown(false); }}
-                    className={`w-full text-left p-2.5 rounded-xl text-xs flex flex-col gap-0.5 cursor-pointer transition-colors ${activeModel === 'Gemini-3.5-Flash' ? 'bg-[#182320] text-[#F4F1EC]' : 'text-[#B8B2AA] hover:bg-[#182320]/40'}`}
+                    className={`w-full text-left p-2 rounded-xl text-xs flex flex-col gap-0.5 cursor-pointer transition-colors ${activeModel === 'Gemini-3.5-Flash' ? 'bg-[#182320] text-[#F4F1EC]' : 'text-[#B8B2AA] hover:bg-[#182320]/40'}`}
                   >
-                    <span className="font-semibold text-white">Gemini 3.5 Flash (Default)</span>
-                    <span className="text-[9px] opacity-65">Fast, highly intelligent, multi-modal model. Works out of the box with zero key setup!</span>
+                    <span className="font-semibold text-white">Gemini 3.5 Flash</span>
+                    <span className="text-[9px] opacity-65">Recommended. Highly intelligent multi-modal assistant (runs with Llama backup).</span>
                   </button>
                   <button 
                     onClick={() => { setActiveModel('Gemini-3.1-Flash-Lite'); setShowModelDropdown(false); }}
-                    className={`w-full text-left p-2.5 rounded-xl text-xs flex flex-col gap-0.5 mt-1 cursor-pointer transition-colors ${activeModel === 'Gemini-3.1-Flash-Lite' ? 'bg-[#182320] text-[#F4F1EC]' : 'text-[#B8B2AA] hover:bg-[#182320]/40'}`}
+                    className={`w-full text-left p-2 rounded-xl text-xs flex flex-col gap-0.5 mt-0.5 cursor-pointer transition-colors ${activeModel === 'Gemini-3.1-Flash-Lite' ? 'bg-[#182320] text-[#F4F1EC]' : 'text-[#B8B2AA] hover:bg-[#182320]/40'}`}
                   >
                     <span className="font-semibold text-white">Gemini 3.1 Flash Lite</span>
-                    <span className="text-[9px] opacity-65">Ultra-fast, lightweight model optimized for high responsiveness and speed.</span>
+                    <span className="text-[9px] opacity-65">Lightweight & fast (runs with Llama backup).</span>
+                  </button>
+
+                  <div className="px-2 py-1 mt-2 border-t border-white/5 pt-1.5 text-[9px] font-bold text-[#E2B714] uppercase tracking-wider opacity-60">Open Source (Llama) - No Keys Needed!</div>
+                  <button 
+                    onClick={() => { setActiveModel('Llama-3.3-70B'); setShowModelDropdown(false); }}
+                    className={`w-full text-left p-2 rounded-xl text-xs flex flex-col gap-0.5 cursor-pointer transition-colors ${activeModel === 'Llama-3.3-70B' ? 'bg-[#182320] text-[#F4F1EC]' : 'text-[#B8B2AA] hover:bg-[#182320]/40'}`}
+                  >
+                    <span className="font-semibold text-white">Llama 3.3 70B (Open-Source)</span>
+                    <span className="text-[9px] opacity-65">Powerful open weights model. Built-in unlimited server access with zero quota limits!</span>
+                  </button>
+                  <button 
+                    onClick={() => { setActiveModel('Llama-3.1-8B'); setShowModelDropdown(false); }}
+                    className={`w-full text-left p-2 rounded-xl text-xs flex flex-col gap-0.5 mt-0.5 cursor-pointer transition-colors ${activeModel === 'Llama-3.1-8B' ? 'bg-[#182320] text-[#F4F1EC]' : 'text-[#B8B2AA] hover:bg-[#182320]/40'}`}
+                  >
+                    <span className="font-semibold text-white">Llama 3.1 8B (Open-Source)</span>
+                    <span className="text-[9px] opacity-65">Ultra-responsive, instant lightning-speed responses with zero quota limits.</span>
                   </button>
                 </div>
               )}
