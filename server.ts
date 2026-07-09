@@ -105,78 +105,45 @@ async function callGroqStream(messages: any[], systemInstruction: string, res: e
     throw new Error(`Groq API returned ${response.status}: ${errText}`);
   }
 
-  if (response.body && typeof (response.body as any).getReader === "function") {
-    // Web Standard Stream (Node 18+ native fetch)
-    const reader = (response.body as any).getReader();
-    const decoder = new TextDecoder("utf-8");
-    let buffer = "";
-    while (true) {
-      const { done, value } = await reader.read();
-      if (done) break;
-      buffer += decoder.decode(value, { stream: true });
-      const lines = buffer.split("\n");
-      buffer = lines.pop() || "";
-      for (const line of lines) {
-        const trimmed = line.trim();
-        if (!trimmed || trimmed === "data: [DONE]") continue;
-        if (trimmed.startsWith("data: ")) {
-          try {
-            const parsed = JSON.parse(trimmed.slice(6));
-            const text = parsed.choices?.[0]?.delta?.content || "";
-            if (text) {
-              res.write(`data: ${JSON.stringify({ text })}\n\n`);
-            }
-          } catch (e) { /* ignore */ }
-        }
+  if (!response.body) {
+    throw new Error("Empty response body from Groq API");
+  }
+
+  const decoder = new TextDecoder("utf-8");
+  let buffer = "";
+
+  for await (const chunk of response.body as any) {
+    const chunkStr = typeof chunk === "string" ? chunk : decoder.decode(chunk, { stream: true });
+    buffer += chunkStr;
+    const lines = buffer.split("\n");
+    buffer = lines.pop() || "";
+
+    for (const line of lines) {
+      const trimmed = line.trim();
+      if (!trimmed || trimmed === "data: [DONE]") continue;
+      if (trimmed.startsWith("data: ")) {
+        try {
+          const parsed = JSON.parse(trimmed.slice(6));
+          const text = parsed.choices?.[0]?.delta?.content || "";
+          if (text) {
+            res.write(`data: ${JSON.stringify({ text })}\n\n`);
+          }
+        } catch (e) { /* ignore */ }
       }
     }
-    if (buffer && buffer.startsWith("data: ")) {
+  }
+
+  if (buffer) {
+    const trimmed = buffer.trim();
+    if (trimmed && trimmed.startsWith("data: ") && trimmed !== "data: [DONE]") {
       try {
-        const parsed = JSON.parse(buffer.slice(6));
+        const parsed = JSON.parse(trimmed.slice(6));
         const text = parsed.choices?.[0]?.delta?.content || "";
         if (text) {
           res.write(`data: ${JSON.stringify({ text })}\n\n`);
         }
       } catch (e) { /* ignore */ }
     }
-  } else if (response.body && typeof (response.body as any).on === "function") {
-    // Node.js Readable Stream
-    await new Promise<void>((resolve, reject) => {
-      let buffer = "";
-      (response.body as any).on("data", (chunk: any) => {
-        buffer += chunk.toString("utf-8");
-        const lines = buffer.split("\n");
-        buffer = lines.pop() || "";
-        for (const line of lines) {
-          const trimmed = line.trim();
-          if (!trimmed || trimmed === "data: [DONE]") continue;
-          if (trimmed.startsWith("data: ")) {
-            try {
-              const parsed = JSON.parse(trimmed.slice(6));
-              const text = parsed.choices?.[0]?.delta?.content || "";
-              if (text) {
-                res.write(`data: ${JSON.stringify({ text })}\n\n`);
-              }
-            } catch (e) { /* ignore */ }
-          }
-        }
-      });
-      (response.body as any).on("end", () => {
-        if (buffer && buffer.startsWith("data: ")) {
-          try {
-            const parsed = JSON.parse(buffer.slice(6));
-            const text = parsed.choices?.[0]?.delta?.content || "";
-            if (text) {
-              res.write(`data: ${JSON.stringify({ text })}\n\n`);
-            }
-          } catch (e) { /* ignore */ }
-        }
-        resolve();
-      });
-      (response.body as any).on("error", (err: any) => reject(err));
-    });
-  } else {
-    throw new Error("Unable to read streaming response from Groq");
   }
 }
 
