@@ -60,60 +60,169 @@ async function retryWithBackoff<T>(
   }
 }
 
-// API endpoint: Chat with Gemini (supports Streaming!)
+// Helper to stream chat responses from Groq API directly
+async function callGroqStream(messages: any[], systemInstruction: string, res: express.Response, model: string = "llama-3.3-70b-versatile") {
+  const groqKey = process.env.GROQ_API_KEY;
+  if (!groqKey) {
+    throw new Error("Groq API key not configured");
+  }
+
+  const response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
+    method: "POST",
+    headers: {
+      "Authorization": `Bearer ${groqKey}`,
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      model: model || "llama-3.3-70b-versatile",
+      messages: [
+        { role: "system", content: systemInstruction || "You are a helpful, friendly, and highly intelligent AI chat assistant. Format your replies beautifully using Markdown." },
+        ...messages.map((m: any) => ({
+          role: m.role === "user" ? "user" : "assistant",
+          content: m.text,
+        })),
+      ],
+      temperature: 0.7,
+      stream: true,
+    }),
+  });
+
+  if (!response.ok) {
+    const errText = await response.text();
+    throw new Error(`Groq API returned ${response.status}: ${errText}`);
+  }
+
+  if (response.body && typeof (response.body as any).getReader === "function") {
+    // Web Standard Stream (Node 18+ native fetch)
+    const reader = (response.body as any).getReader();
+    const decoder = new TextDecoder("utf-8");
+    let buffer = "";
+    while (true) {
+      const { done, value } = await reader.read();
+      if (done) break;
+      buffer += decoder.decode(value, { stream: true });
+      const lines = buffer.split("\n");
+      buffer = lines.pop() || "";
+      for (const line of lines) {
+        const trimmed = line.trim();
+        if (!trimmed || trimmed === "data: [DONE]") continue;
+        if (trimmed.startsWith("data: ")) {
+          try {
+            const parsed = JSON.parse(trimmed.slice(6));
+            const text = parsed.choices?.[0]?.delta?.content || "";
+            if (text) {
+              res.write(`data: ${JSON.stringify({ text })}\n\n`);
+            }
+          } catch (e) { /* ignore */ }
+        }
+      }
+    }
+    if (buffer && buffer.startsWith("data: ")) {
+      try {
+        const parsed = JSON.parse(buffer.slice(6));
+        const text = parsed.choices?.[0]?.delta?.content || "";
+        if (text) {
+          res.write(`data: ${JSON.stringify({ text })}\n\n`);
+        }
+      } catch (e) { /* ignore */ }
+    }
+  } else if (response.body && typeof (response.body as any).on === "function") {
+    // Node.js Readable Stream
+    await new Promise<void>((resolve, reject) => {
+      let buffer = "";
+      (response.body as any).on("data", (chunk: any) => {
+        buffer += chunk.toString("utf-8");
+        const lines = buffer.split("\n");
+        buffer = lines.pop() || "";
+        for (const line of lines) {
+          const trimmed = line.trim();
+          if (!trimmed || trimmed === "data: [DONE]") continue;
+          if (trimmed.startsWith("data: ")) {
+            try {
+              const parsed = JSON.parse(trimmed.slice(6));
+              const text = parsed.choices?.[0]?.delta?.content || "";
+              if (text) {
+                res.write(`data: ${JSON.stringify({ text })}\n\n`);
+              }
+            } catch (e) { /* ignore */ }
+          }
+        }
+      });
+      (response.body as any).on("end", () => {
+        if (buffer && buffer.startsWith("data: ")) {
+          try {
+            const parsed = JSON.parse(buffer.slice(6));
+            const text = parsed.choices?.[0]?.delta?.content || "";
+            if (text) {
+              res.write(`data: ${JSON.stringify({ text })}\n\n`);
+            }
+          } catch (e) { /* ignore */ }
+        }
+        resolve();
+      });
+      (response.body as any).on("error", (err: any) => reject(err));
+    });
+  } else {
+    throw new Error("Unable to read streaming response from Groq");
+  }
+}
+
+// Helper to make non-streaming Groq calls directly
+async function callGroqNonStream(messages: any[]): Promise<string> {
+  const groqKey = process.env.GROQ_API_KEY;
+  if (!groqKey) {
+    throw new Error("Groq API key not configured");
+  }
+
+  const response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
+    method: "POST",
+    headers: {
+      "Authorization": `Bearer ${groqKey}`,
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      model: "llama-3.3-70b-versatile",
+      messages,
+      temperature: 0.7,
+      stream: false,
+    }),
+  });
+
+  if (!response.ok) {
+    const errText = await response.text();
+    throw new Error(`Groq API returned ${response.status}: ${errText}`);
+  }
+
+  const data = await response.json() as any;
+  return data.choices?.[0]?.message?.content || "";
+}
+
+// API endpoint: Chat with Groq directly (supports Streaming!)
 app.post("/api/chat", async (req, res) => {
   try {
-    const { messages, systemInstruction } = req.body;
+    const { messages, systemInstruction, model } = req.body;
     if (!messages || !Array.isArray(messages)) {
       return res.status(400).json({ error: "messages array is required" });
     }
-
-    const ai = getGeminiClient();
-    
-    // Format messages for the @google/genai SDK
-    const contents = messages.map((m: any) => ({
-      role: m.role === "user" ? "user" : "model",
-      parts: [{ text: m.text }]
-    }));
 
     // Setup headers for Server-Sent Events (SSE) streaming
     res.setHeader("Content-Type", "text/event-stream");
     res.setHeader("Cache-Control", "no-cache");
     res.setHeader("Connection", "keep-alive");
 
-    // Wrap the stream creation with retry logic
-    const responseStream = await retryWithBackoff(() => 
-      ai.models.generateContentStream({
-        model: "gemini-3.5-flash",
-        contents,
-        config: {
-          systemInstruction: systemInstruction || "You are a helpful, friendly, and highly intelligent AI chat assistant. Format your replies beautifully using Markdown.",
-        }
-      })
-    );
-
-    for await (const chunk of responseStream) {
-      const text = chunk.text;
-      if (text) {
-        res.write(`data: ${JSON.stringify({ text })}\n\n`);
-      }
-    }
-
+    // Call Groq stream directly with the selected model or default to llama-3.3-70b-versatile
+    const groqModel = model || "llama-3.3-70b-versatile";
+    await callGroqStream(messages, systemInstruction, res, groqModel);
     res.write("data: [DONE]\n\n");
     res.end();
   } catch (error: any) {
     console.error("Error in /api/chat:", error);
     
-    // Provide a human-friendly user-facing message if the error is due to high demand/503
-    const errorStr = String(error.message || error);
-    let friendlyMessage = error.message || "Internal Server Error";
-    if (errorStr.includes("high demand") || errorStr.includes("503") || errorStr.includes("UNAVAILABLE")) {
-      friendlyMessage = "The AI service is currently experiencing very high volume. Please wait a few seconds and try sending your message again.";
-    }
+    const friendlyMessage = error.message || "Internal Server Error";
 
     // Write the error into the SSE stream if possible, or send JSON if stream not started
     if (!res.headersSent) {
-      res.status(503).json({ error: friendlyMessage });
+      res.status(500).json({ error: friendlyMessage });
     } else {
       res.write(`data: ${JSON.stringify({ error: friendlyMessage })}\n\n`);
       res.end();
@@ -121,7 +230,7 @@ app.post("/api/chat", async (req, res) => {
   }
 });
 
-// API endpoint: Generate Conversation Title
+// API endpoint: Generate Conversation Title with Groq directly
 app.post("/api/generate-title", async (req, res) => {
   try {
     const { message } = req.body;
@@ -129,18 +238,14 @@ app.post("/api/generate-title", async (req, res) => {
       return res.status(400).json({ error: "message is required" });
     }
 
-    const ai = getGeminiClient();
     const prompt = `Based on this initial user query, generate a very brief, concise chat conversation title (maximum 3-5 words, do not include quotes or surrounding punctuation): "${message}"`;
 
-    // Wrap with retry logic
-    const response = await retryWithBackoff(() => 
-      ai.models.generateContent({
-        model: "gemini-3.5-flash",
-        contents: prompt,
-      })
-    );
-
-    const title = response.text?.trim().replace(/^["']|["']$/g, "") || "New Chat";
+    // Direct to Groq title generation
+    const groqMessages = [
+      { role: "user", content: prompt }
+    ];
+    const groqResponse = await callGroqNonStream(groqMessages);
+    const title = groqResponse.trim().replace(/^["']|["']$/g, "") || "New Chat";
     res.json({ title });
   } catch (error: any) {
     console.error("Error in /api/generate-title:", error);
