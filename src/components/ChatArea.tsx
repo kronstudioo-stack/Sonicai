@@ -65,6 +65,7 @@ export default function ChatArea({
     return (localStorage.getItem('omnimind_chat_font') as 'sans' | 'serif' | 'mono') || 'serif';
   });
   const [showFontDropdown, setShowFontDropdown] = useState(false);
+  const [groqKeyInput, setGroqKeyInput] = useState(() => localStorage.getItem('ai_chat_companion_groq_key_v1') || '');
   
   const fileInputRef = useRef<HTMLInputElement>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
@@ -385,6 +386,42 @@ export default function ChatArea({
                     <Info size={12} className="text-[#2EAD79]" />
                     <span>These instructions alter how the model generates explanations and formats responses.</span>
                   </p>
+                </div>
+              </div>
+
+              {/* Custom API Providers Section */}
+              <div className="mt-5 pt-4 border-t border-white/5 grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div className="md:col-span-1">
+                  <span className="block text-[10px] font-bold uppercase tracking-widest text-[#2EAD79] mb-1">Backup Key Settings</span>
+                  <p className="text-[10px] text-[#7E7871] leading-relaxed">
+                    By default, OmniMind uses a free backup key. To use your own limits with zero restrictions, add your Groq API Key here.
+                  </p>
+                </div>
+                <div className="md:col-span-2 flex gap-3 items-end">
+                  <div className="flex-1">
+                    <span className="block text-[10px] font-bold uppercase tracking-widest text-[#7E7871] mb-2">Groq API Key (gsk_...)</span>
+                    <input
+                      type="password"
+                      value={groqKeyInput}
+                      onChange={(e) => {
+                        setGroqKeyInput(e.target.value);
+                        localStorage.setItem('ai_chat_companion_groq_key_v1', e.target.value);
+                      }}
+                      placeholder="Paste your gsk_... key here"
+                      className="w-full px-3 py-2 bg-[#0A100E] border border-white/5 rounded-xl text-xs text-[#F4F1EC] placeholder-[#7E7871] focus:outline-hidden focus:border-[#2EAD79]/40"
+                    />
+                  </div>
+                  {groqKeyInput && (
+                    <button
+                      onClick={() => {
+                        setGroqKeyInput('');
+                        localStorage.removeItem('ai_chat_companion_groq_key_v1');
+                      }}
+                      className="px-3 py-2 bg-white/5 hover:bg-white/10 border border-white/5 rounded-xl text-xs font-semibold text-[#E26868] cursor-pointer transition-colors"
+                    >
+                      Clear
+                    </button>
+                  )}
                 </div>
               </div>
             </div>

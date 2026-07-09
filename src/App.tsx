@@ -140,10 +140,14 @@ export default function App() {
   // Helper: auto-generate a beautiful title for a conversation on the first message exchange
   const generateTitleForConversation = async (convId: string, initialMessageText: string) => {
     try {
+      const groqApiKey = localStorage.getItem('ai_chat_companion_groq_key_v1') || '';
       const response = await fetch("/api/generate-title", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ message: initialMessageText })
+        body: JSON.stringify({ 
+          message: initialMessageText,
+          groqApiKey
+        })
       });
       if (response.ok) {
         const data = await response.json();
@@ -224,13 +228,15 @@ export default function App() {
         : systemInstruction;
 
       // 3. Initiate SSE connection
+      const groqApiKey = localStorage.getItem('ai_chat_companion_groq_key_v1') || '';
       const response = await fetch("/api/chat", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           messages: formattedMessages,
           systemInstruction: customInstruction,
-          model: model
+          model: model,
+          groqApiKey
         })
       });
 
