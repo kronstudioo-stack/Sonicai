@@ -1,13 +1,763 @@
-<!doctype html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>My Google AI Studio App</title>
-  </head>
-  <body>
-    <div id="root"></div>
-    <script type="module" src="/src/main.tsx"></script>
-  </body>
-</html>
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>Sonic Flash</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-light.min.css">
+    <style>
+        :root {
+            --bg: #F8F9FA;
+            --surface: #FFFFFF;
+            --border: #E5E7EB;
+            --primary: #4F46E5;
+            --primary-hover: #4338CA;
+            --accent: #06B6D4;
+            --success: #10B981;
+            --warning: #F59E0B;
+            --danger: #EF4444;
+            --text: #1A1A2E;
+            --text2: #6B7280;
+            --text3: #9CA3AF;
+            --shadow-sm: 0 1px 3px rgba(0,0,0,0.04);
+            --shadow-md: 0 4px 12px rgba(0,0,0,0.06);
+            --font: 'Cairo', sans-serif;
+            --mono: 'Fira Code', 'Consolas', monospace;
+        }
+        body.dark-mode {
+            --bg: #111827;
+            --surface: #1F2937;
+            --border: #374151;
+            --primary: #818CF8;
+            --primary-hover: #6366F1;
+            --text: #F9FAFB;
+            --text2: #D1D5DB;
+            --text3: #9CA3AF;
+            --shadow-sm: 0 1px 3px rgba(0,0,0,0.2);
+            --shadow-md: 0 4px 12px rgba(0,0,0,0.3);
+        }
+        *{margin:0;padding:0;box-sizing:border-box}
+        body{
+            font-family:var(--font);
+            background: linear-gradient(135deg, #F0F1F3 0%, #E8E9EC 100%);
+            color:var(--text);
+            height:100dvh;overflow:hidden;
+            display:flex;justify-content:center;align-items:center;
+            transition: background 0.3s, color 0.3s;
+        }
+        body.dark-mode { background: linear-gradient(135deg, #0F172A 0%, #1E293B 100%); }
+        .app{
+            width:100%;max-width:500px;height:100%;
+            display:flex;flex-direction:column;
+            background:var(--bg);
+            position:relative;z-index:1;
+            transition: background 0.3s;
+        }
+        @media(min-width:768px){
+            body{background:#E8E9EC}
+            body.dark-mode { background: #0F172A; }
+            .app{
+                max-width:750px;height:92dvh;
+                border-radius:20px;
+                box-shadow:0 0 0 1px var(--border),0 20px 50px rgba(0,0,0,0.08);
+                margin:0 20px;
+            }
+        }
 
+        .header{
+            display:flex;align-items:center;
+            padding:14px 18px;
+            background:var(--surface);
+            border-bottom:1px solid var(--border);
+            gap:12px;z-index:10;flex-shrink:0;
+            transition: background 0.3s;
+        }
+        .logo-container{display:flex;align-items:center;cursor:pointer;flex:1;}
+        .logo-text{font-weight:700;font-size:1.3rem;}
+        .logo-text .sonic { color: #10B981; }
+        .logo-text .flash { color: var(--text); }
+        .credit-badge{
+            background:var(--surface);
+            border:1px solid var(--border);
+            border-radius:20px;padding:5px 14px;
+            font-size:0.8rem;font-weight:600;
+            color:var(--text2);
+            display:flex;align-items:center;gap:8px;
+            cursor:pointer; transition: all 0.2s;
+        }
+        .credit-badge .credit-icon {
+            display: flex; align-items: center; justify-content: center;
+            width: 20px; height: 20px;
+            background: #10B981; border-radius: 5px;
+            color: #fff; font-size: 0.65rem;
+        }
+        .menu-btn{
+            width:32px;height:32px;border-radius:8px;
+            background:var(--surface);border:1px solid var(--border);
+            display:flex;align-items:center;justify-content:center;
+            cursor:pointer;font-size:15px;color:var(--text2);
+            transition:all 0.2s;
+        }
+        .menu-btn:hover{background:var(--primary);color:#fff;border-color:var(--primary);}
+
+        .content{
+            flex:1;overflow-y:auto;padding:18px;
+            scroll-behavior:smooth;
+        }
+        .content::-webkit-scrollbar{width:3px}
+        .content::-webkit-scrollbar-thumb{background:var(--border);border-radius:2px}
+        .welcome-area{text-align:center;max-width:420px;margin:auto;animation:fadeUp 0.5s ease;}
+        @keyframes fadeUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+        .welcome-heading{font-size:1.6rem;font-weight:700;color:var(--text);margin-bottom:8px;}
+        .welcome-subtitle{color:var(--text2);font-size:0.85rem;margin-bottom:24px}
+        .suggestion-cards{display:flex;flex-direction:column;gap:10px;width:100%}
+        .suggestion-card{
+            display:flex;align-items:center;gap:12px;
+            padding:15px 18px;background:var(--surface);
+            border:1px solid var(--border);border-radius:14px;
+            cursor:pointer;transition:all 0.2s;
+            text-align:right;
+        }
+        .suggestion-card:hover{border-color:var(--primary);box-shadow:0 4px 12px rgba(79,70,229,0.08);}
+        .suggestion-icon{
+            width:38px;height:38px;border-radius:10px;
+            background:rgba(79,70,229,0.06);
+            display:flex;align-items:center;justify-content:center;
+            font-size:1rem;color:var(--primary);
+        }
+
+        .msg{
+            margin-bottom:14px;
+            animation: msgSlideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        @keyframes msgSlideUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .user{text-align:left}
+        .user .bubble{
+            background:var(--primary);color:#fff;
+            padding:12px 16px;border-radius:18px 18px 4px 18px;
+            max-width:80%;display:inline-block;
+            font-size:0.9rem;line-height:1.6;
+            box-shadow: 0 4px 15px rgba(79,70,229,0.3);
+        }
+        .ai{text-align:right}
+        .ai .bubble{
+            background:var(--surface);border:1px solid var(--border);
+            padding:12px 16px;border-radius:18px 18px 18px 4px;
+            max-width:80%;display:inline-block;
+            font-size:0.9rem;line-height:1.6;color:var(--text);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .thinking-dots-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 16px 0;
+        }
+        .thinking-dot-item {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: var(--primary);
+            animation: bounceDot 1.2s infinite ease-in-out;
+            box-shadow: 0 0 8px rgba(79,70,229,0.5);
+        }
+        .thinking-dot-item:nth-child(2) { animation-delay: 0.2s; }
+        .thinking-dot-item:nth-child(3) { animation-delay: 0.4s; }
+        @keyframes bounceDot {
+            0%, 100% { transform: translateY(0); opacity: 0.3; }
+            50% { transform: translateY(-6px); opacity: 1; }
+        }
+        .thinking-label {
+            font-size: 0.85rem;
+            color: var(--text2);
+            margin-top: 4px;
+            text-align: center;
+        }
+
+        .streaming-cursor {
+            display: inline-block;
+            width: 3px;
+            height: 1.2em;
+            background: var(--primary);
+            margin-right: 4px;
+            vertical-align: text-bottom;
+            border-radius: 2px;
+            animation: cursorBlink 0.8s infinite, cursorGlow 1.2s infinite;
+            box-shadow: 0 0 10px var(--primary);
+        }
+        @keyframes cursorBlink { 0%, 50% { opacity: 1; } 51%, 100% { opacity: 0; } }
+        @keyframes cursorGlow { 0%, 100% { box-shadow: 0 0 6px var(--primary); } 50% { box-shadow: 0 0 16px var(--accent); } }
+
+        .input-area{padding:14px 18px;background:var(--surface);border-top:1px solid var(--border);flex-shrink:0;transition: background 0.3s;}
+        .composer{
+            background:var(--bg);border-radius:24px;
+            padding:12px 16px;border:1px solid var(--border);
+            transition:all 0.2s;
+        }
+        .composer:focus-within{border-color:var(--primary);box-shadow:0 0 0 3px rgba(79,70,229,0.1);}
+        .composer-textarea{
+            width:100%;border:none;background:transparent;font-family:var(--font);
+            font-size:0.95rem;color:var(--text);resize:none;outline:none;
+            line-height:1.5;min-height:22px;max-height:100px;
+            margin-bottom:8px;padding:0;
+        }
+        .composer-textarea::placeholder{color:var(--text3);}
+        .composer-bottom{display:flex;align-items:center;justify-content:space-between;}
+        .model-pill{
+            background:var(--surface);border:1px solid var(--border);
+            border-radius:18px;padding:5px 14px;
+            font-size:0.75rem;font-weight:600;
+            color:var(--text);cursor:pointer;
+            display:flex;align-items:center;gap:6px;
+            transition:all 0.2s;
+        }
+        .model-pill:hover{border-color:var(--primary);color:var(--primary);}
+        .actions-right{display:flex;align-items:center;gap:8px;}
+        .mic-btn,.send-btn-new{
+            width:38px;height:38px;border-radius:50%;
+            background:var(--surface);border:1px solid var(--border);
+            display:flex;align-items:center;justify-content:center;
+            cursor:pointer;font-size:1rem;color:var(--text2);
+            transition:all 0.2s;
+        }
+        .mic-btn:hover{background:var(--accent);color:#fff;border-color:var(--accent);}
+        .mic-btn.listening{background:var(--danger);color:#fff;border-color:var(--danger);}
+        .send-btn-new{background:var(--primary);color:#fff;border:none;display:none;}
+        .send-btn-new:hover{background:var(--primary-hover);}
+        .has-text .send-btn-new{display:flex;}
+        .has-text .mic-btn{display:none;}
+
+        .sidebar{
+            position:fixed;bottom:0;left:0;right:0;z-index:1000;
+            background:var(--surface);border-radius:20px 20px 0 0;
+            transform:translateY(100%);transition:0.3s cubic-bezier(0.4,0,0.2,1);
+            padding:24px 20px;max-height:65vh;overflow-y:auto;
+            border:1px solid var(--border);box-shadow:0 -8px 30px rgba(0,0,0,0.06);
+            max-width:500px;margin:0 auto;
+        }
+        @media(min-width:768px){.sidebar{max-width:750px;}}
+        .sidebar.open{transform:translateY(0)}
+        .sidebar h3{color:var(--text);text-align:center;margin-bottom:16px;font-weight:700;}
+        .sidebar-item{
+            padding:14px 18px;border-radius:12px;color:var(--text2);
+            cursor:pointer;display:flex;align-items:center;gap:14px;
+            font-size:0.9rem;margin-bottom:2px;transition:all 0.2s;
+        }
+        .sidebar-item:hover{background:rgba(79,70,229,0.05);color:var(--primary);}
+
+        .overlay{position:fixed;inset:0;background:rgba(0,0,0,0.2);z-index:999;display:none;}
+        .overlay.show{display:block}
+
+        .modal{
+            position:fixed;bottom:0;left:0;right:0;z-index:1100;
+            background:var(--surface);border-radius:20px 20px 0 0;
+            transform:translateY(100%);transition:0.3s cubic-bezier(0.4,0,0.2,1);
+            padding:24px 20px;max-height:75vh;overflow-y:auto;
+            border:1px solid var(--border);box-shadow:0 -8px 30px rgba(0,0,0,0.06);
+            max-width:500px;margin:0 auto;
+        }
+        @media(min-width:768px){.modal{max-width:750px;}}
+        .modal.show{transform:translateY(0)}
+        .modal h2{color:var(--text);text-align:center;margin-bottom:20px;font-weight:700;}
+        .modal input,.modal select{
+            width:100%;padding:12px 16px;background:var(--bg);
+            border:1px solid var(--border);border-radius:12px;
+            color:var(--text);margin-bottom:10px;font-size:0.9rem;
+            outline:none;font-family:var(--font);transition:border 0.2s;
+        }
+        .modal input:focus,.modal select:focus{border-color:var(--primary);}
+        .modal button{
+            width:100%;padding:12px;background:var(--primary);
+            border:none;border-radius:12px;color:#fff;font-weight:600;
+            cursor:pointer;margin-top:6px;font-size:0.9rem;transition:all 0.2s;
+        }
+        .modal button:hover{background:var(--primary-hover);}
+
+        .model-popup-overlay{position:fixed;inset:0;z-index:1200;background:rgba(0,0,0,0.2);backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px);display:none;align-items:center;justify-content:center;}
+        .model-popup-overlay.show{display:flex}
+        .model-popup{
+            background:rgba(255,255,255,0.8);
+            backdrop-filter:blur(20px);
+            -webkit-backdrop-filter:blur(20px);
+            border-radius:24px;padding:20px;
+            width:90%;max-width:320px;max-height:60vh;overflow-y:auto;
+            border:1px solid rgba(255,255,255,0.6);
+            box-shadow:0 25px 60px rgba(0,0,0,0.12);
+            animation: fadeSlideUp 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        @keyframes fadeSlideUp {
+            from { opacity: 0; transform: translateY(30px) scale(0.96); }
+            to { opacity: 1; transform: translateY(0) scale(1); }
+        }
+        body.dark-mode .model-popup {
+            background: rgba(31, 41, 55, 0.85);
+            border-color: rgba(255,255,255,0.1);
+        }
+        .model-popup h2{font-size:1rem;margin-bottom:16px;text-align:center;color:var(--text);}
+        .model-list{display:flex;flex-direction:column;gap:6px;}
+        .model-card{
+            display:flex;align-items:center;justify-content:space-between;
+            padding:12px 14px;border-radius:14px;
+            border:1px solid rgba(0,0,0,0.06);
+            background:rgba(255,255,255,0.4);
+            cursor:pointer;
+            transition:all 0.25s;
+        }
+        .model-card:hover{background:rgba(79,70,229,0.06);border-color:rgba(79,70,229,0.2);}
+        .model-card.selected{border-color:var(--primary);background:rgba(79,70,229,0.08);}
+        .model-card .model-name{font-weight:600;font-size:0.9rem;color:var(--text);}
+        .model-card .model-cost{font-size:0.7rem;color:var(--text2);}
+        .model-popup .close-btn{
+            display:block;margin:14px auto 0;background:none;
+            border:none;color:var(--text2);cursor:pointer;
+            font-size:0.8rem;font-family:var(--font);
+        }
+
+        .code-container{
+            margin:10px 0;border-radius:12px;overflow:hidden;
+            background:#F8F9FA;border:1px solid var(--border);
+            direction:ltr;
+        }
+        .code-header{
+            display:flex;align-items:center;justify-content:space-between;
+            padding:8px 14px;background:rgba(0,0,0,0.02);
+            font-size:0.7rem;color:var(--text2);
+            border-bottom:1px solid var(--border);
+        }
+        .code-btn{
+            background:var(--surface);border:1px solid var(--border);
+            color:var(--text2);padding:3px 10px;border-radius:6px;
+            font-size:0.65rem;cursor:pointer;transition:all 0.2s;
+        }
+        .code-btn:hover{background:var(--primary);color:#fff;border-color:var(--primary);}
+        .code-btn.run-btn{background:var(--primary);color:#fff;border-color:var(--primary);}
+        .code-body{padding:12px;font-family:var(--mono);font-size:0.8rem;line-height:1.6;color:var(--text);}
+        #copyToast{
+            position:fixed;bottom:30px;left:50%;transform:translateX(-50%);
+            background:var(--text);color:var(--bg);padding:8px 20px;border-radius:20px;
+            font-size:0.8rem;z-index:999;display:none;
+        }
+        .register-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.4);backdrop-filter:blur(8px);z-index:9999;display:flex;align-items:center;justify-content:center;}
+        .register-box{background:var(--surface);border-radius:20px;padding:28px 24px;width:90%;max-width:360px;text-align:center;border:1px solid var(--border);}
+    </style>
+</head>
+<body>
+<div class="app" id="app">
+    <div class="header">
+        <div class="logo-container" id="userAvatar" onclick="handleAvatarClick()">
+            <div class="logo-text">
+                <span class="sonic">Sonic</span>
+                <span class="flash"> Flash</span>
+            </div>
+        </div>
+        <div class="credit-badge" onclick="handleAvatarClick()">
+            <span class="credit-icon">C</span>
+            <span id="miniTokens">300</span>
+        </div>
+        <div class="menu-btn" onclick="toggleSidebar()"><i class="fas fa-bars"></i></div>
+    </div>
+
+    <div class="content" id="chatArea">
+        <div class="welcome-area" id="welcomeBox">
+            <h1 class="welcome-heading">مرحباً، أنا Sonic Flash</h1>
+            <p class="welcome-subtitle">مساعد ذكي بسيط وسريع. ابدأ محادثة جديدة.</p>
+            <div class="suggestion-cards">
+                <div class="suggestion-card" onclick="sendQuick('ما هي آخر أخبار التقنية؟')"><div class="suggestion-icon"><i class="fas fa-newspaper"></i></div><div><div style="font-weight:600;">أخبار التقنية</div><div style="font-size:0.75rem;color:var(--text2)">آخر المستجدات</div></div></div>
+                <div class="suggestion-card" onclick="sendQuick('اكتب لي كود HTML بسيط')"><div class="suggestion-icon"><i class="fas fa-code"></i></div><div><div style="font-weight:600;">برمجة</div><div style="font-size:0.75rem;color:var(--text2)">أكواد جاهزة</div></div></div>
+                <div class="suggestion-card" onclick="sendQuick('اشرح لي مفهوم الذكاء الاصطناعي')"><div class="suggestion-icon"><i class="fas fa-robot"></i></div><div><div style="font-weight:600;">تعلم</div><div style="font-size:0.75rem;color:var(--text2)">الذكاء الاصطناعي</div></div></div>
+            </div>
+        </div>
+        <div id="messages"></div>
+    </div>
+
+    <div class="input-area">
+        <div class="composer" id="composer">
+            <textarea id="userInput" class="composer-textarea" placeholder="اكتب رسالتك..." rows="1" oninput="autoResize(); toggleSendButton();" onkeypress="handleEnter(event)"></textarea>
+            <div class="composer-bottom">
+                <div class="model-pill" id="modelPill" onclick="openModelPopup()">
+                    <span id="pillModelName">Sonic Flash</span>
+                    <i class="fas fa-chevron-down" style="font-size:0.5rem;"></i>
+                </div>
+                <div class="actions-right">
+                    <button class="mic-btn" id="micBtn" onclick="toggleSpeech()"><i class="fas fa-microphone"></i></button>
+                    <button class="send-btn-new" id="sendBtnNew" onclick="sendMsg(document.getElementById('userInput').value)"><i class="fas fa-arrow-up"></i></button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="sidebar" id="sidebar">
+    <h3>القائمة</h3>
+    <div class="sidebar-item" onclick="newChat()"><i class="fas fa-plus-circle"></i> محادثة جديدة</div>
+    <div style="max-height:35vh;overflow-y:auto;margin-bottom:8px;" id="sidebarConversations"></div>
+    <div class="sidebar-item" onclick="openSettingsModal()"><i class="fas fa-cog"></i> الإعدادات</div>
+    <div class="sidebar-item" style="color:var(--danger);" onclick="deleteAllConversations()"><i class="fas fa-trash-alt" style="color:var(--danger);"></i> حذف جميع المحادثات</div>
+</div>
+<div class="overlay" id="overlay" onclick="closeAll()"></div>
+
+<div class="modal" id="adminModal">
+    <h2>لوحة الإدارة</h2>
+    <div id="adminLogin"><input type="password" id="adminPass" placeholder="كلمة المرور"><button onclick="adminLogin()">دخول</button></div>
+    <div id="adminPanel" style="display:none;">
+        <select id="adminAction">
+            <option value="addSelf">إضافة رموز</option>
+            <option value="deductSelf">خصم رموز</option>
+            <option value="sendToUser">إرسال لمستخدم</option>
+            <option value="banUser">حظر مستخدم</option>
+            <option value="resetSelf">إعادة تعيين</option>
+        </select>
+        <input type="text" id="targetUserId" placeholder="معرف المستخدم">
+        <input type="number" id="adminAmount" placeholder="المبلغ" value="10">
+        <button onclick="adminUpdateTokens()">تنفيذ</button>
+        <div id="adminMsg" style="font-size:0.8rem;margin-top:8px;color:var(--text2);"></div>
+    </div>
+    <button style="background:transparent;border:1px solid var(--border);color:var(--text2);margin-top:12px;font-weight:600;" onclick="closeAdminModal()">إغلاق</button>
+</div>
+
+<div class="modal" id="settingsModal">
+    <h2>الإعدادات</h2>
+    <div style="display:flex; flex-direction:column; gap:12px;">
+        <div style="color:var(--text2); font-size:0.9rem;">معرف الحساب: <span id="accountId" style="color:var(--primary); font-weight:600;"></span></div>
+        <label style="color:var(--text2); font-size:0.85rem;">المظهر</label>
+        <select id="themeSelect" onchange="toggleTheme(this.value)">
+            <option value="light">فاتح</option>
+            <option value="dark">داكن</option>
+        </select>
+    </div>
+    <button style="background:transparent; border:1px solid var(--border); color:var(--text2); margin-top:14px; font-weight:600;" onclick="closeSettingsModal()">إغلاق</button>
+</div>
+
+<div class="model-popup-overlay" id="modelPopupOverlay">
+    <div class="model-popup">
+        <h2>اختر النموذج</h2>
+        <div class="model-list" id="modelList"></div>
+        <button class="close-btn" onclick="closeModelPopup()">إغلاق</button>
+    </div>
+</div>
+
+<div id="copyToast">تم النسخ!</div>
+<div id="registerOverlay" class="register-overlay" style="display: none;">
+    <div class="register-box">
+        <h2>تسجيل جديد</h2>
+        <input type="text" id="regFirstName" placeholder="الاسم الأول">
+        <input type="text" id="regLastName" placeholder="الاسم الثاني">
+        <input type="password" id="regPassword" placeholder="كلمة المرور">
+        <button onclick="registerUser()" style="background:var(--primary); color:#fff; border:none; width:100%; padding:12px; border-radius:12px; font-weight:600; cursor:pointer; margin-top:8px;">تسجيل</button>
+    </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+<script src="https://unpkg.com/mqtt/dist/mqtt.min.js"></script>
+<script>
+    function toggleTheme(mode) {
+        if (mode === 'dark') {
+            document.body.classList.add('dark-mode');
+            localStorage.setItem('sf_theme', 'dark');
+        } else {
+            document.body.classList.remove('dark-mode');
+            localStorage.setItem('sf_theme', 'light');
+        }
+    }
+    (function() {
+        if (localStorage.getItem('sf_theme') === 'dark') {
+            document.body.classList.add('dark-mode');
+            if (document.getElementById('themeSelect')) document.getElementById('themeSelect').value = 'dark';
+        }
+    })();
+
+    const GROQ_KEY = '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';
+    const OR_KEY = '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';
+
+    const TOKEN_DAILY = parseInt(localStorage.getItem('sf_token_daily')) || 300;
+    const TOKEN_PERIOD = parseInt(localStorage.getItem('sf_token_period')) || 24;
+    const bannedUsers = JSON.parse(localStorage.getItem('sf_banned_users') || '[]');
+
+    let userAccount = JSON.parse(localStorage.getItem('sf_user'));
+    if (!userAccount) {
+        document.getElementById('registerOverlay').style.display = 'flex';
+        document.getElementById('app').style.pointerEvents = 'none';
+    } else {
+        if (bannedUsers.includes(userAccount.accountId)) {
+            document.body.innerHTML = '<div style="display:flex;align-items:center;justify-content:center;height:100vh;color:#EF4444;font-size:1.3rem;">تم حظر حسابك.</div>';
+            throw new Error('User banned');
+        }
+        document.getElementById('registerOverlay').style.display = 'none';
+        if (!userAccount.tokens) {
+            userAccount.tokens = TOKEN_DAILY;
+            userAccount.usedTokens = 0;
+            userAccount.lastReset = Date.now();
+            userAccount.nextReset = Date.now() + TOKEN_PERIOD * 3600000;
+            localStorage.setItem('sf_user', JSON.stringify(userAccount));
+        }
+    }
+
+    function registerUser() {
+        const f = document.getElementById('regFirstName').value.trim();
+        const l = document.getElementById('regLastName').value.trim();
+        const p = document.getElementById('regPassword').value.trim();
+        if (!f || !l || !p) { alert('املأ جميع الحقول'); return; }
+        userAccount = { firstName: f, lastName: l, password: p, accountId: 'SF-' + Date.now().toString(36).toUpperCase(), createdAt: Date.now(), tokens: TOKEN_DAILY, usedTokens: 0, lastReset: Date.now(), nextReset: Date.now() + TOKEN_PERIOD * 3600000 };
+        localStorage.setItem('sf_user', JSON.stringify(userAccount));
+        document.getElementById('registerOverlay').style.display = 'none';
+        document.getElementById('app').style.pointerEvents = 'auto';
+        updateTokenUI();
+        subscribeMQTT();
+    }
+
+    function checkReset() {
+        if (Date.now() >= userAccount.nextReset) {
+            userAccount.tokens = TOKEN_DAILY;
+            userAccount.usedTokens = 0;
+            userAccount.lastReset = Date.now();
+            userAccount.nextReset = Date.now() + TOKEN_PERIOD * 3600000;
+            localStorage.setItem('sf_user', JSON.stringify(userAccount));
+        }
+    }
+
+    function updateTokenUI() {
+        document.getElementById('miniTokens').textContent = userAccount.tokens;
+    }
+
+    function deduct(amount) {
+        if (userAccount.tokens >= amount) { userAccount.tokens -= amount; userAccount.usedTokens += amount; localStorage.setItem('sf_user', JSON.stringify(userAccount)); updateTokenUI(); return true; }
+        return false;
+    }
+
+    const state = {
+        currentModel: localStorage.getItem('sf_currentModel') || 'sonic-flash',
+        models: [
+            { id: 'sonic-lite', name: 'Sonic Lite 1.4', cost: 5, min: 0, provider: 'groq', modelName: 'llama-3.3-70b-versatile', prompt: 'أنت Sonic Lite، مساعد بسيط ومفيد.' },
+            { id: 'sonic-flash', name: 'Sonic Flash 1.1', cost: 25, min: 25, provider: 'openrouter', modelName: 'deepseek/deepseek-chat', prompt: 'أنت Sonic Flash، نموذج DeepSeek الذكي.' },
+            { id: 'sonic-ultra', name: 'Sonic Ultra 2.0', cost: 50, min: 50, provider: 'openrouter', modelName: 'north-mini-code:free', prompt: 'أنت Sonic Ultra، نموذج متطور جداً.' }
+        ],
+        mqttClient: null,
+        currentConversationId: null,
+        isTyping: false
+    };
+
+    let conversations = JSON.parse(localStorage.getItem('sf_conversations') || '[]');
+    function getConv() { return conversations.find(c => c.id === state.currentConversationId); }
+    function saveConvs() { localStorage.setItem('sf_conversations', JSON.stringify(conversations)); updateSidebarHistory(); }
+    function genId() { return Date.now().toString(36) + Math.random().toString(36).substr(2); }
+
+    const client = mqtt.connect('wss://broker.hivemq.com:8884/mqtt');
+    client.on('connect', () => { state.mqttClient = client; if (userAccount) subscribeMQTT(); });
+    function publishMQTT(t, m) { if (state.mqttClient?.connected) state.mqttClient.publish(t, JSON.stringify(m)); }
+    function subscribeMQTT() {
+        if (!state.mqttClient || !userAccount) return;
+        state.mqttClient.subscribe('sonicflash/transfer/' + userAccount.accountId);
+        state.mqttClient.subscribe('sonicflash/cmd/' + userAccount.accountId);
+        state.mqttClient.on('message', (topic, message) => {
+            const data = JSON.parse(message.toString());
+            if (topic === 'sonicflash/transfer/' + userAccount.accountId && data.amount > 0) {
+                userAccount.tokens += data.amount;
+                localStorage.setItem('sf_user', JSON.stringify(userAccount));
+                updateTokenUI();
+                showToast(`🎁 هدية ${data.amount} رمز من ${data.from === 'admin' ? 'الإدارة' : data.from}!`);
+            } else if (topic === 'sonicflash/cmd/' + userAccount.accountId) {
+                if (data.action === 'deduct') {
+                    if (userAccount.tokens >= data.amount) { userAccount.tokens -= data.amount; localStorage.setItem('sf_user', JSON.stringify(userAccount)); updateTokenUI(); showToast(`تم خصم ${data.amount} رمز.`); }
+                } else if (data.action === 'ban') {
+                    const b = JSON.parse(localStorage.getItem('sf_banned_users') || '[]');
+                    if (!b.includes(userAccount.accountId)) { b.push(userAccount.accountId); localStorage.setItem('sf_banned_users', JSON.stringify(b)); }
+                    alert('تم حظرك.'); location.reload();
+                }
+            }
+        });
+    }
+
+    let adminClicks = 0, adminTimer;
+    function handleAvatarClick() { adminClicks++; if (adminClicks === 3) { clearTimeout(adminTimer); adminClicks = 0; openAdminModal(); } else { clearTimeout(adminTimer); adminTimer = setTimeout(() => adminClicks = 0, 800); } }
+
+    function adminLogin() { if (document.getElementById('adminPass').value === 'admin112233') { document.getElementById('adminLogin').style.display = 'none'; document.getElementById('adminPanel').style.display = 'block'; } else alert('خطأ'); }
+    function adminUpdateTokens() {
+        const a = document.getElementById('adminAction').value;
+        const amt = parseInt(document.getElementById('adminAmount').value) || 0;
+        const tid = document.getElementById('targetUserId').value.trim();
+        const msg = document.getElementById('adminMsg');
+        if (a === 'addSelf') { userAccount.tokens += amt; msg.textContent = `تمت إضافة ${amt} رمز.`; }
+        else if (a === 'deductSelf') { if (userAccount.tokens >= amt) { userAccount.tokens -= amt; msg.textContent = `تم خصم ${amt} رمز.`; } else { alert('رصيد غير كاف'); return; } }
+        else if (a === 'sendToUser') { if (!tid) { alert('أدخل المعرف'); return; } publishMQTT('sonicflash/transfer/' + tid, { from: 'admin', amount: amt }); msg.textContent = `تم إرسال ${amt} رمز.`; }
+        else if (a === 'banUser') { if (!tid) { alert('أدخل المعرف'); return; } publishMQTT('sonicflash/cmd/' + tid, { action: 'ban' }); const b = JSON.parse(localStorage.getItem('sf_banned_users') || '[]'); if (!b.includes(tid)) { b.push(tid); localStorage.setItem('sf_banned_users', JSON.stringify(b)); } msg.textContent = `تم حظر ${tid}.`; }
+        else if (a === 'resetSelf') { userAccount.tokens = TOKEN_DAILY; userAccount.usedTokens = 0; userAccount.lastReset = Date.now(); userAccount.nextReset = Date.now() + TOKEN_PERIOD * 3600000; msg.textContent = 'تمت إعادة التعيين.'; }
+        localStorage.setItem('sf_user', JSON.stringify(userAccount));
+        updateTokenUI();
+    }
+
+    let recognition;
+    function toggleSpeech() {
+        const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+        if (!SR) { alert('غير مدعوم'); return; }
+        if (!recognition) { recognition = new SR(); recognition.lang = 'ar-SA'; recognition.interimResults = false; recognition.onresult = e => { document.getElementById('userInput').value = e.results[0][0].transcript; autoResize(); toggleSendButton(); }; recognition.onend = () => document.getElementById('micBtn').classList.remove('listening'); }
+        if (recognition.listening) { recognition.stop(); document.getElementById('micBtn').classList.remove('listening'); }
+        else { recognition.start(); document.getElementById('micBtn').classList.add('listening'); }
+    }
+
+    function renderModels() {
+        document.getElementById('modelList').innerHTML = state.models.map(m => {
+            const isSelected = state.currentModel === m.id;
+            const costText = m.cost > 0 ? `${m.cost} رمز` : 'مجاني';
+            return `
+                <div class="model-card ${isSelected ? 'selected' : ''}" onclick="selectModel('${m.id}')">
+                    <span class="model-name">${m.name}</span>
+                    <span class="model-cost">${costText}</span>
+                </div>`;
+        }).join('');
+    }
+    function selectModel(id, close = true) {
+        const m = state.models.find(x => x.id === id);
+        if (!m) return;
+        if (userAccount.tokens < m.min) { alert('رموز غير كافية'); return; }
+        state.currentModel = id;
+        localStorage.setItem('sf_currentModel', id);
+        document.getElementById('pillModelName').textContent = m.name.split(' ')[0];
+        renderModels();
+        if (close) closeModelPopup();
+    }
+
+    function updateSidebarHistory() {
+        const c = document.getElementById('sidebarConversations');
+        if (!c) return;
+        c.innerHTML = conversations.slice(0, 8).map(cv => `<div class="sidebar-item" onclick="loadConv('${cv.id}');toggleSidebar();" style="font-size:0.8rem;"><span>${cv.title}</span><span style="margin-right:auto;font-size:0.65rem;color:var(--text3)">${new Date(cv.timestamp).toLocaleDateString()}</span></div>`).join('');
+    }
+    function newChat() { state.currentConversationId = genId(); conversations.unshift({ id: state.currentConversationId, title: 'محادثة جديدة', messages: [], timestamp: Date.now() }); saveConvs(); document.getElementById('messages').innerHTML = ''; document.getElementById('welcomeBox').style.display = 'block'; }
+    function loadConv(id) { const c = conversations.find(x => x.id === id); if (!c) return; state.currentConversationId = id; document.getElementById('messages').innerHTML = ''; document.getElementById('welcomeBox').style.display = 'none'; c.messages.forEach(m => appendMsg(m.role, m.content)); }
+
+    function autoResize() { const t = document.getElementById('userInput'); t.style.height = 'auto'; t.style.height = t.scrollHeight + 'px'; }
+    function toggleSendButton() { document.getElementById('composer').classList.toggle('has-text', document.getElementById('userInput').value.trim().length > 0); }
+    function handleEnter(e) { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMsg(document.getElementById('userInput').value); } }
+    function sendQuick(t) { document.getElementById('userInput').value = t; autoResize(); toggleSendButton(); sendMsg(t); }
+
+    async function sendMsg(text) {
+        if (!text || state.isTyping) return;
+        checkReset();
+        const model = state.models.find(m => m.id === state.currentModel);
+        if (userAccount.tokens < 1) { alert('لا توجد رموز كافية.'); return; }
+        document.getElementById('userInput').value = ''; autoResize(); toggleSendButton();
+        if (!state.currentConversationId) newChat();
+        const conv = getConv();
+        conv.messages.push({ role: 'user', content: text });
+        if (conv.messages.length === 1) conv.title = text.substring(0, 25);
+        saveConvs();
+        appendMsg('user', text);
+        state.isTyping = true;
+
+        const thinkEl = document.createElement('div'); thinkEl.className = 'msg ai';
+        thinkEl.innerHTML = `
+            <div class="bubble" style="background:transparent; border:none; box-shadow:none;">
+                <div class="thinking-dots-container">
+                    <span class="thinking-dot-item"></span>
+                    <span class="thinking-dot-item"></span>
+                    <span class="thinking-dot-item"></span>
+                </div>
+                <div class="thinking-label">يفكر...</div>
+            </div>`;
+        document.getElementById('messages').appendChild(thinkEl);
+        scrollBottom();
+
+        try {
+            const reply = await getAI(text);
+            thinkEl.remove();
+            const cost = Math.ceil((text.length + reply.length) / 4);
+            deduct(cost);
+            streamMessage(reply);
+            conv.messages.push({ role: 'ai', content: reply });
+            saveConvs();
+        } catch (e) {
+            thinkEl.remove();
+            appendMsg('ai', `خطأ: ${e.message}`);
+        }
+        state.isTyping = false;
+    }
+
+    function streamMessage(fullText) {
+        const msgDiv = document.createElement('div'); msgDiv.className = 'msg ai';
+        const bubble = document.createElement('div'); bubble.className = 'bubble';
+        msgDiv.appendChild(bubble);
+        document.getElementById('messages').appendChild(msgDiv);
+        scrollBottom();
+        document.getElementById('welcomeBox').style.display = 'none';
+
+        let index = 0;
+        const textNode = document.createTextNode('');
+        const cursor = document.createElement('span');
+        cursor.className = 'streaming-cursor';
+        bubble.appendChild(textNode);
+        bubble.appendChild(cursor);
+
+        const interval = setInterval(() => {
+            if (index < fullText.length) {
+                textNode.textContent += fullText.charAt(index);
+                index++;
+                scrollBottom();
+            } else {
+                clearInterval(interval);
+                cursor.remove();
+                bubble.innerHTML = formatMsg(fullText);
+                document.querySelectorAll('.code-body code').forEach(b => hljs.highlightElement(b));
+            }
+        }, 15);
+    }
+
+    async function getAI(prompt) {
+        const model = state.models.find(m => m.id === state.currentModel);
+        const conv = getConv();
+        const sys = { role: 'system', content: model.prompt };
+        const msgs = [sys, ...conv.messages.slice(-6).map(m => ({ role: m.role === 'user' ? 'user' : 'assistant', content: m.content })), { role: 'user', content: prompt }];
+        if (model.provider === 'groq') {
+            const r = await fetch('https://api.groq.com/openai/v1/chat/completions', { method: 'POST', headers: { 'Authorization': `Bearer ${GROQ_KEY}`, 'Content-Type': 'application/json' }, body: JSON.stringify({ model: model.modelName, messages: msgs, temperature: 0.3, max_tokens: 4096 }) });
+            if (!r.ok) { const e = await r.json(); throw new Error(e.error?.message || r.status); }
+            const d = await r.json();
+            return d.choices[0].message.content;
+        } else {
+            const apiKey = model.key || OR_KEY;
+            const maxTokens = model.maxTokens || 4096;
+            const r = await fetch('https://openrouter.ai/api/v1/chat/completions', { method: 'POST', headers: { 'Authorization': `Bearer ${apiKey}`, 'Content-Type': 'application/json', 'HTTP-Referer': location.href, 'X-Title': 'Sonic Flash' }, body: JSON.stringify({ model: model.modelName, messages: msgs, max_tokens: maxTokens }) });
+            if (!r.ok) { const e = await r.json(); throw new Error(e.error?.message || r.status); }
+            const d = await r.json();
+            return d.choices[0].message.content;
+        }
+    }
+
+    function appendMsg(role, text) {
+        document.getElementById('welcomeBox').style.display = 'none';
+        const div = document.createElement('div'); div.className = `msg ${role}`;
+        div.innerHTML = `<div class="bubble">${formatMsg(text)}</div>`;
+        document.getElementById('messages').appendChild(div);
+        document.querySelectorAll('.code-body code').forEach(b => hljs.highlightElement(b));
+        scrollBottom();
+    }
+    function formatMsg(t) { return t.replace(/```(\w+)?\n([\s\S]*?)```/g, (_, lang, code) => `<div class="code-container"><div class="code-header"><span>${lang || 'text'}</span><div class="code-actions"><button class="code-btn" onclick="copyCode(this)">نسخ</button>${lang === 'html' ? '<button class="code-btn run-btn" onclick="runHtml(this)">تشغيل</button>' : ''}</div></div><div class="code-body"><pre><code>${escapeHtml(code.trim())}</code></pre></div></div>`).replace(/\n/g, '<br>'); }
+    function copyCode(btn) { navigator.clipboard.writeText(btn.closest('.code-container').querySelector('code').innerText).then(() => showToast('تم النسخ!')); }
+    function runHtml(btn) { const w = window.open('', '_blank'); w.document.write(btn.closest('.code-container').querySelector('code').innerText); w.document.close(); }
+    function escapeHtml(s) { return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;'); }
+
+    function toggleSidebar() { document.getElementById('sidebar').classList.toggle('open'); document.getElementById('overlay').classList.toggle('show'); updateSidebarHistory(); }
+    function closeAll() { document.getElementById('sidebar').classList.remove('open'); document.getElementById('overlay').classList.remove('show'); closeAdminModal(); closeSettingsModal(); }
+    function openAdminModal() { document.getElementById('adminModal').classList.add('show'); document.getElementById('overlay').classList.add('show'); }
+    function closeAdminModal() { document.getElementById('adminModal').classList.remove('show'); document.getElementById('overlay').classList.remove('show'); }
+    function openSettingsModal() { document.getElementById('accountId').textContent = userAccount.accountId; document.getElementById('settingsModal').classList.add('show'); document.getElementById('overlay').classList.add('show'); toggleSidebar(); }
+    function closeSettingsModal() { document.getElementById('settingsModal').classList.remove('show'); document.getElementById('overlay').classList.remove('show'); }
+    function scrollBottom() { document.getElementById('chatArea').scrollTop = document.getElementById('chatArea').scrollHeight; }
+    function showToast(msg) { const t = document.getElementById('copyToast'); t.textContent = msg; t.style.display = 'block'; setTimeout(() => t.style.display = 'none', 2000); }
+    function openModelPopup() { document.getElementById('modelPopupOverlay').classList.add('show'); }
+    function closeModelPopup() { document.getElementById('modelPopupOverlay').classList.remove('show'); }
+
+    checkReset();
+    renderModels();
+    selectModel(state.currentModel, false);
+    updateTokenUI();
+    if (conversations.length) loadConv(conversations[0].id);
+    updateSidebarHistory();
+    setInterval(() => { checkReset(); updateTokenUI(); }, 60000);
+</script>
+</body>
+</html>
