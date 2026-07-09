@@ -16,7 +16,8 @@ import {
   Paperclip,
   X,
   FileText,
-  Volume2
+  Volume2,
+  Type
 } from 'lucide-react';
 import { Conversation, Message } from '../types';
 import MarkdownRenderer from './MarkdownRenderer';
@@ -60,6 +61,10 @@ export default function ChatArea({
   const [isRecording, setIsRecording] = useState(false);
   const [attachedFiles, setAttachedFiles] = useState<AttachedFile[]>([]);
   const [isDeepThink, setIsDeepThink] = useState(true);
+  const [chatFont, setChatFont] = useState<'sans' | 'serif' | 'mono'>(() => {
+    return (localStorage.getItem('omnimind_chat_font') as 'sans' | 'serif' | 'mono') || 'serif';
+  });
+  const [showFontDropdown, setShowFontDropdown] = useState(false);
   
   const fileInputRef = useRef<HTMLInputElement>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
@@ -225,11 +230,52 @@ export default function ChatArea({
                   ? 'bg-[#D97A5A]/15 text-[#E2C39B] border-[#D97A5A]/35 hover:bg-[#D97A5A]/25'
                   : 'bg-[#2A2724] text-[#7E7871] border-white/5 hover:text-[#B8B2AA]'
               }`}
+              title="Toggle Deep Thought reasoning mode"
             >
               <Sliders size={10} className={`${isDeepThink ? 'animate-pulse text-[#D97A5A]' : ''}`} />
               <span>Deep Think</span>
               <div className={`w-1.5 h-1.5 rounded-full ${isDeepThink ? 'bg-[#D97A5A] animate-pulse' : 'bg-[#7E7871]/40'}`}></div>
             </button>
+
+            {/* Font Selector Rounded Pill */}
+            <div className="relative">
+              <button 
+                onClick={() => setShowFontDropdown(!showFontDropdown)}
+                className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#2A2724] text-[10px] font-bold uppercase tracking-wider text-[#B8B2AA] border border-white/5 hover:border-[#D97A5A]/35 hover:text-[#F4F1EC] transition-all cursor-pointer shadow-xs select-none"
+                title="Choose AI output font style"
+              >
+                <Type size={10} className="text-[#D97A5A]" />
+                <span>Font: {chatFont}</span>
+                <ChevronDown size={10} className="opacity-60" />
+              </button>
+
+              {showFontDropdown && (
+                <div className="absolute left-0 mt-2 w-52 rounded-2xl bg-[#242220] border border-white/5 p-2 shadow-xl z-30 animate-fade-in-up">
+                  <div className="px-2 py-1 mb-1 text-[9px] font-bold uppercase tracking-widest text-[#7E7871]">AI-Generated Font</div>
+                  <button 
+                    onClick={() => { setChatFont('serif'); localStorage.setItem('omnimind_chat_font', 'serif'); setShowFontDropdown(false); }}
+                    className={`w-full text-left p-2 rounded-xl text-xs flex flex-col gap-0.5 cursor-pointer transition-colors ${chatFont === 'serif' ? 'bg-[#2A2724] text-[#F4F1EC]' : 'text-[#B8B2AA] hover:bg-[#2A2724]/40'}`}
+                  >
+                    <span className="font-semibold text-white font-serif">Warm Literary Serif</span>
+                    <span className="text-[9px] opacity-65">Lora. Premium editorial elegance and absolute comfort for reading.</span>
+                  </button>
+                  <button 
+                    onClick={() => { setChatFont('sans'); localStorage.setItem('omnimind_chat_font', 'sans'); setShowFontDropdown(false); }}
+                    className={`w-full text-left p-2 rounded-xl text-xs flex flex-col gap-0.5 mt-1 cursor-pointer transition-colors ${chatFont === 'sans' ? 'bg-[#2A2724] text-[#F4F1EC]' : 'text-[#B8B2AA] hover:bg-[#2A2724]/40'}`}
+                  >
+                    <span className="font-semibold text-white font-sans">Modern Minimalist Sans</span>
+                    <span className="text-[9px] opacity-65">Plus Jakarta Sans. Sleek, clean, fluid, and highly responsive.</span>
+                  </button>
+                  <button 
+                    onClick={() => { setChatFont('mono'); localStorage.setItem('omnimind_chat_font', 'mono'); setShowFontDropdown(false); }}
+                    className={`w-full text-left p-2 rounded-xl text-xs flex flex-col gap-0.5 mt-1 cursor-pointer transition-colors ${chatFont === 'mono' ? 'bg-[#2A2724] text-[#F4F1EC]' : 'text-[#B8B2AA] hover:bg-[#2A2724]/40'}`}
+                  >
+                    <span className="font-semibold text-white font-mono">Technical Developer Mono</span>
+                    <span className="text-[9px] opacity-65">JetBrains Mono. Ultra-precise, structured, perfect for coding & logic.</span>
+                  </button>
+                </div>
+              )}
+            </div>
           </div>
         </div>
 
@@ -361,14 +407,14 @@ export default function ChatArea({
                           {m.text}
                         </div>
                       ) : (
-                        <div className="text-[14.5px] text-[#B8B2AA] leading-relaxed w-full text-left font-sans prose prose-invert">
+                        <div className="text-[14.5px] text-[#B8B2AA] leading-relaxed w-full text-left prose prose-invert">
                           {(() => {
                             const { thought, answer } = extractThought(m.text);
                             const isThinking = m.text.includes('<thought>') && !m.text.includes('</thought>');
                             return (
                               <>
                                 <ThoughtBlock thought={thought} isThinking={isThinking} />
-                                {answer ? <MarkdownRenderer content={answer} /> : !thought ? <MarkdownRenderer content={m.text} /> : null}
+                                {answer ? <MarkdownRenderer content={answer} font={chatFont} /> : !thought ? <MarkdownRenderer content={m.text} font={chatFont} /> : null}
                               </>
                             );
                           })()}
