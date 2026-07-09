@@ -56,7 +56,7 @@ export default function ChatArea({
 }: ChatAreaProps) {
   const [input, setInput] = useState('');
   const [showSettings, setShowSettings] = useState(false);
-  const [activeModel, setActiveModel] = useState<'Llama-3.3-70B' | 'Llama-3.1-8B'>('Llama-3.3-70B');
+  const [activeModel, setActiveModel] = useState<'Gemini-3.5-Flash' | 'Llama-3.3-70B' | 'Llama-3.1-8B'>('Gemini-3.5-Flash');
   const [showModelDropdown, setShowModelDropdown] = useState(false);
   const [isRecording, setIsRecording] = useState(false);
   const [attachedFiles, setAttachedFiles] = useState<AttachedFile[]>([]);
@@ -85,7 +85,12 @@ export default function ChatArea({
       finalMessage = `${finalMessage}\n\n${fileNames}`;
     }
 
-    const mappedModel = activeModel === 'Llama-3.3-70B' ? 'llama-3.3-70b-versatile' : 'llama-3.1-8b-instant';
+    const mappedModel = 
+      activeModel === 'Gemini-3.5-Flash' 
+        ? 'gemini-3.5-flash' 
+        : activeModel === 'Llama-3.3-70B' 
+          ? 'llama-3.3-70b-versatile' 
+          : 'llama-3.1-8b-instant';
     onSendMessage(finalMessage, isDeepThink, mappedModel);
     setInput('');
     setAttachedFiles([]);
@@ -199,15 +204,28 @@ export default function ChatArea({
                 className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#182320] text-[10px] font-semibold text-[#B8B2AA] border border-white/5 hover:border-[#2EAD79]/30 transition-all cursor-pointer shadow-xs select-none"
               >
                 <div className="w-1.5 h-1.5 rounded-full bg-[#53C28B]"></div>
-                <span>{activeModel === 'Llama-3.3-70B' ? 'Llama 3.3 70B' : 'Llama 3.1 8B'}</span>
+                <span>
+                  {activeModel === 'Gemini-3.5-Flash' 
+                    ? 'Gemini 1.5 Flash' 
+                    : activeModel === 'Llama-3.3-70B' 
+                      ? 'Llama 3.3 70B' 
+                      : 'Llama 3.1 8B'}
+                </span>
                 <ChevronDown size={10} className="opacity-60" />
               </button>
 
               {showModelDropdown && (
-                <div className="absolute left-0 mt-2 w-52 rounded-2xl bg-[#101815] border border-white/5 p-2 shadow-xl z-30 animate-fade-in-up">
+                <div className="absolute left-0 mt-2 w-56 rounded-2xl bg-[#101815] border border-white/5 p-2 shadow-xl z-30 animate-fade-in-up">
+                  <button 
+                    onClick={() => { setActiveModel('Gemini-3.5-Flash'); setShowModelDropdown(false); }}
+                    className={`w-full text-left p-2.5 rounded-xl text-xs flex flex-col gap-0.5 cursor-pointer transition-colors ${activeModel === 'Gemini-3.5-Flash' ? 'bg-[#182320] text-[#F4F1EC]' : 'text-[#B8B2AA] hover:bg-[#182320]/40'}`}
+                  >
+                    <span className="font-semibold text-white">Gemini 1.5 Flash (Default)</span>
+                    <span className="text-[9px] opacity-65">Fast, multi-modal, and stable out-of-the-box model. No setup or API keys required!</span>
+                  </button>
                   <button 
                     onClick={() => { setActiveModel('Llama-3.3-70B'); setShowModelDropdown(false); }}
-                    className={`w-full text-left p-2.5 rounded-xl text-xs flex flex-col gap-0.5 cursor-pointer transition-colors ${activeModel === 'Llama-3.3-70B' ? 'bg-[#182320] text-[#F4F1EC]' : 'text-[#B8B2AA] hover:bg-[#182320]/40'}`}
+                    className={`w-full text-left p-2.5 rounded-xl text-xs flex flex-col gap-0.5 mt-1 cursor-pointer transition-colors ${activeModel === 'Llama-3.3-70B' ? 'bg-[#182320] text-[#F4F1EC]' : 'text-[#B8B2AA] hover:bg-[#182320]/40'}`}
                   >
                     <span className="font-semibold text-white">Llama 3.3 70B</span>
                     <span className="text-[9px] opacity-65">State-of-the-art versatile 70B parameter model with great logical reasoning.</span>

@@ -112,30 +112,10 @@ async function callGroqStream(messages: any[], systemInstruction: string, res: e
   const decoder = new TextDecoder("utf-8");
   let buffer = "";
 
-  for await (const chunk of response.body as any) {
-    const chunkStr = typeof chunk === "string" ? chunk : decoder.decode(chunk, { stream: true });
-    buffer += chunkStr;
-    const lines = buffer.split("\n");
-    buffer = lines.pop() || "";
-
-    for (const line of lines) {
-      const trimmed = line.trim();
-      if (!trimmed || trimmed === "data: [DONE]") continue;
-      if (trimmed.startsWith("data: ")) {
-        try {
-          const parsed = JSON.parse(trimmed.slice(6));
-          const text = parsed.choices?.[0]?.delta?.content || "";
-          if (text) {
-            res.write(`data: ${JSON.stringify({ text })}\n\n`);
-          }
-        } catch (e) { /* ignore */ }
-      }
-    }
-  }
-
-  if (buffer) {
-    const trimmed = buffer.trim();
-    if (trimmed && trimmed.startsWith("data: ") && trimmed !== "data: [DONE]") {
+  const handleLine = (line: string) => {
+    const trimmed = line.trim();
+    if (!trimmed || trimmed === "data: [DONE]") return;
+    if (trimmed.startsWith("data: ")) {
       try {
         const parsed = JSON.parse(trimmed.slice(6));
         const text = parsed.choices?.[0]?.delta?.content || "";
@@ -144,6 +124,54 @@ async function callGroqStream(messages: any[], systemInstruction: string, res: e
         }
       } catch (e) { /* ignore */ }
     }
+  };
+
+  if (typeof (response.body as any).getReader === "function") {
+    // Web Standard Reader (Node 18+ and edge/browser fetch)
+    const reader = (response.body as any).getReader();
+    while (true) {
+      const { done, value } = await reader.read();
+      if (done) break;
+      const chunkStr = decoder.decode(value, { stream: true });
+      buffer += chunkStr;
+      const lines = buffer.split("\n");
+      buffer = lines.pop() || "";
+      for (const line of lines) {
+        handleLine(line);
+      }
+    }
+  } else if (Symbol.asyncIterator in response.body) {
+    // Async Iterable (fallback standard node-fetch stream)
+    for await (const chunk of response.body as any) {
+      const chunkStr = typeof chunk === "string" ? chunk : decoder.decode(chunk, { stream: true });
+      buffer += chunkStr;
+      const lines = buffer.split("\n");
+      buffer = lines.pop() || "";
+      for (const line of lines) {
+        handleLine(line);
+      }
+    }
+  } else if (typeof (response.body as any).on === "function") {
+    // Node.js Event-Emitter Style Streams (legacy node-fetch)
+    await new Promise<void>((resolve, reject) => {
+      (response.body as any).on("data", (chunk: any) => {
+        const chunkStr = chunk.toString("utf-8");
+        buffer += chunkStr;
+        const lines = buffer.split("\n");
+        buffer = lines.pop() || "";
+        for (const line of lines) {
+          handleLine(line);
+        }
+      });
+      (response.body as any).on("end", () => resolve());
+      (response.body as any).on("error", (err: any) => reject(err));
+    });
+  } else {
+    throw new Error("No compatible stream interface found on response body");
+  }
+
+  if (buffer) {
+    handleLine(buffer);
   }
 }
 
@@ -177,7 +205,7 @@ async function callGroqNonStream(messages: any[]): Promise<string> {
   return data.choices?.[0]?.message?.content || "";
 }
 
-// API endpoint: Chat with Groq directly (supports Streaming!)
+// API endpoint: Chat with Gemini or Groq fallback (supports Streaming!)
 app.post("/api/chat", async (req, res) => {
   try {
     const { messages, systemInstruction, model } = req.body;
@@ -185,13 +213,50 @@ app.post("/api/chat", async (req, res) => {
       return res.status(400).json({ error: "messages array is required" });
     }
 
-    // Setup headers for Server-Sent Events (SSE) streaming
+    // Setup headers for Server-Sent Events (SSE) streaming to prevent buffering on Cloud Run/Nginx
     res.setHeader("Content-Type", "text/event-stream");
-    res.setHeader("Cache-Control", "no-cache");
+    res.setHeader("Cache-Control", "no-cache, no-transform");
     res.setHeader("Connection", "keep-alive");
+    res.setHeader("X-Accel-Buffering", "no");
 
-    // Call Groq stream directly with the selected model or default to llama-3.3-70b-versatile
-    const groqModel = model || "llama-3.3-70b-versatile";
+    const requestedModel = model || "gemini-3.5-flash";
+    const isGemini = requestedModel.startsWith("gemini-") || requestedModel === "gemini-3.5-flash";
+
+    if (isGemini) {
+      try {
+        const contents = messages.map((m: any) => ({
+          role: m.role === "user" ? "user" : "model",
+          parts: [{ text: m.text }]
+        }));
+
+        const ai = getGeminiClient();
+        const responseStream = await retryWithBackoff<any>(() =>
+          ai.models.generateContentStream({
+            model: "gemini-3.5-flash",
+            contents,
+            config: {
+              systemInstruction: systemInstruction || "You are a helpful, friendly, and highly intelligent AI chat assistant. Format your replies beautifully using Markdown.",
+            }
+          })
+        );
+
+        for await (const chunk of responseStream) {
+          const text = chunk.text;
+          if (text) {
+            res.write(`data: ${JSON.stringify({ text })}\n\n`);
+          }
+        }
+        res.write("data: [DONE]\n\n");
+        res.end();
+        return;
+      } catch (geminiError: any) {
+        console.warn("Gemini stream failed (possibly quota limit). Silently falling back to Groq stream:", geminiError.message || geminiError);
+        // Fall through to Groq
+      }
+    }
+
+    // Call Groq stream (either explicitly requested or as fallback)
+    const groqModel = requestedModel.startsWith("llama-") ? requestedModel : "llama-3.3-70b-versatile";
     await callGroqStream(messages, systemInstruction, res, groqModel);
     res.write("data: [DONE]\n\n");
     res.end();
@@ -210,7 +275,7 @@ app.post("/api/chat", async (req, res) => {
   }
 });
 
-// API endpoint: Generate Conversation Title with Groq directly
+// API endpoint: Generate Conversation Title with Gemini or Groq fallback
 app.post("/api/generate-title", async (req, res) => {
   try {
     const { message } = req.body;
@@ -220,13 +285,26 @@ app.post("/api/generate-title", async (req, res) => {
 
     const prompt = `Based on this initial user query, generate a very brief, concise chat conversation title (maximum 3-5 words, do not include quotes or surrounding punctuation): "${message}"`;
 
-    // Direct to Groq title generation
-    const groqMessages = [
-      { role: "user", content: prompt }
-    ];
-    const groqResponse = await callGroqNonStream(groqMessages);
-    const title = groqResponse.trim().replace(/^["']|["']$/g, "") || "New Chat";
-    res.json({ title });
+    try {
+      const ai = getGeminiClient();
+      const response = await retryWithBackoff(() =>
+        ai.models.generateContent({
+          model: "gemini-3.5-flash",
+          contents: prompt,
+        })
+      );
+      const title = response.text?.trim().replace(/^["']|["']$/g, "") || "New Chat";
+      res.json({ title });
+    } catch (geminiError) {
+      console.warn("Gemini title generation failed, falling back to Groq:", geminiError);
+      
+      const groqMessages = [
+        { role: "user", content: prompt }
+      ];
+      const groqResponse = await callGroqNonStream(groqMessages);
+      const title = groqResponse.trim().replace(/^["']|["']$/g, "") || "New Chat";
+      res.json({ title });
+    }
   } catch (error: any) {
     console.error("Error in /api/generate-title:", error);
     res.status(500).json({ error: error.message || "Failed to generate title" });
