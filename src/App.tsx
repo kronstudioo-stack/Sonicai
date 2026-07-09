@@ -235,8 +235,20 @@ export default function App() {
       });
 
       if (!response.ok) {
-        const errorData = await response.json().catch(() => ({}));
-        throw new Error(errorData.error || "Failed to fetch response from GenAI backend. Please check your network or API secrets.");
+        const errText = await response.text().catch(() => "");
+        let errorMessage = "";
+        try {
+          const errorData = JSON.parse(errText);
+          errorMessage = errorData.error;
+        } catch {
+          // If the error is HTML/text (like a 502/503 from Cloud Run), strip tags or use a clean portion
+          if (errText.includes("<html>")) {
+            errorMessage = "Server experienced a temporary gateway or proxy issue. Please wait 5 seconds and try again.";
+          } else {
+            errorMessage = errText || "Failed to fetch response from GenAI backend. Please check your network or API secrets.";
+          }
+        }
+        throw new Error(errorMessage || "Failed to fetch response from GenAI backend. Please check your network or API secrets.");
       }
 
       // 4. Ingest and stream response

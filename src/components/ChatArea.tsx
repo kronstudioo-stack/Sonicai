@@ -56,7 +56,7 @@ export default function ChatArea({
 }: ChatAreaProps) {
   const [input, setInput] = useState('');
   const [showSettings, setShowSettings] = useState(false);
-  const [activeModel, setActiveModel] = useState<'Gemini-3.5-Flash' | 'Llama-3.3-70B' | 'Llama-3.1-8B'>('Gemini-3.5-Flash');
+  const [activeModel, setActiveModel] = useState<'Gemini-3.5-Flash' | 'Llama-3.3-70B' | 'Llama-3.1-8B'>('Llama-3.3-70B');
   const [showModelDropdown, setShowModelDropdown] = useState(false);
   const [isRecording, setIsRecording] = useState(false);
   const [attachedFiles, setAttachedFiles] = useState<AttachedFile[]>([]);
