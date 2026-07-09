@@ -34,9 +34,9 @@ export default function MarkdownRenderer({ content, font = 'serif' }: MarkdownRe
           const blockId = `code-${index}`;
 
           return (
-            <div key={blockId} className="my-5 overflow-hidden rounded-2xl border border-white/5 bg-[#1F1D1B] text-[#F4F1EC] font-mono text-[13px] shadow-lg animate-fade-in-up">
-              <div className="flex items-center justify-between bg-[#262320] px-4.5 py-2.5 text-[10px] font-bold uppercase tracking-widest text-[#B8B2AA] border-b border-white/5">
-                <span className="text-[#D97A5A]">{lang || 'text'}</span>
+            <div key={blockId} className="my-5 overflow-hidden rounded-2xl border border-white/5 bg-[#131E1B] text-[#F4F1EC] font-mono text-[13px] shadow-lg animate-fade-in-up">
+              <div className="flex items-center justify-between bg-[#172521] px-4.5 py-2.5 text-[10px] font-bold uppercase tracking-widest text-[#B8B2AA] border-b border-white/5">
+                <span className="text-[#2EAD79]">{lang || 'text'}</span>
                 <button
                   type="button"
                   onClick={() => copyToClipboard(code.trim(), blockId)}
@@ -56,7 +56,7 @@ export default function MarkdownRenderer({ content, font = 'serif' }: MarkdownRe
                   )}
                 </button>
               </div>
-              <pre className="p-5 overflow-x-auto leading-relaxed text-left max-w-full font-mono bg-[#1F1D1B] text-[#E2C39B] scrollbar-none">
+              <pre className="p-5 overflow-x-auto leading-relaxed text-left max-w-full font-mono bg-[#131E1B] text-[#A7F3D0] scrollbar-none">
                 <code>{code.trim()}</code>
               </pre>
             </div>
@@ -155,14 +155,14 @@ function parseInlineMarkdown(text: string): React.ReactNode[] {
     }
     if (part.startsWith('*') && part.endsWith('*')) {
       return (
-        <em key={index} className="italic text-[#E2C39B]">
+        <em key={index} className="italic text-[#A7F3D0]">
           {part.slice(1, -1)}
         </em>
       );
     }
     if (part.startsWith('`') && part.endsWith('`')) {
       return (
-        <code key={index} className="px-1.5 py-0.5 mx-0.5 rounded-lg bg-[#2A2724] border border-white/5 font-mono text-[13px] text-[#D97A5A] font-medium">
+        <code key={index} className="px-1.5 py-0.5 mx-0.5 rounded-lg bg-[#182320] border border-white/5 font-mono text-[13px] text-[#2EAD79] font-medium">
           {part.slice(1, -1)}
         </code>
       );

@@ -315,7 +315,7 @@ export default function App() {
   };
 
   return (
-    <div className="flex h-screen overflow-hidden font-sans bg-[#1B1A18] text-[#F4F1EC]">
+    <div className="flex h-screen overflow-hidden font-sans bg-[#0A100E] text-[#F4F1EC]">
       {/* Sidebar - Manage History */}
       <Sidebar
         conversations={conversations}

@@ -165,7 +165,7 @@ export default function ChatArea({
   ];
 
   return (
-    <div className="flex-1 flex flex-col h-full bg-[#1B1A18] text-[#F4F1EC] relative overflow-hidden">
+    <div className="flex-1 flex flex-col h-full bg-[#0A100E] text-[#F4F1EC] relative overflow-hidden">
       
       {/* Hidden file selector */}
       <input 
@@ -177,11 +177,11 @@ export default function ChatArea({
       />
 
       {/* Top Floating Header with Blur Glass Effect */}
-      <header className="flex items-center justify-between h-16 px-6 md:px-10 border-b border-white/5 shrink-0 bg-[#1B1A18]/80 backdrop-blur-md z-10 sticky top-0">
+      <header className="flex items-center justify-between h-16 px-6 md:px-10 border-b border-white/5 shrink-0 bg-[#0A100E]/80 backdrop-blur-md z-10 sticky top-0">
         <div className="flex items-center gap-4">
           <button
             onClick={onOpenSidebar}
-            className="md:hidden p-2 -ml-2 rounded-xl hover:bg-[#2A2724] text-[#B8B2AA] cursor-pointer"
+            className="md:hidden p-2 -ml-2 rounded-xl hover:bg-[#182320] text-[#B8B2AA] cursor-pointer"
           >
             <Menu size={18} />
           </button>
@@ -195,7 +195,7 @@ export default function ChatArea({
             <div className="relative">
               <button 
                 onClick={() => setShowModelDropdown(!showModelDropdown)}
-                className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#2A2724] text-[10px] font-semibold text-[#B8B2AA] border border-white/5 hover:border-[#D97A5A]/30 transition-all cursor-pointer shadow-xs select-none"
+                className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#182320] text-[10px] font-semibold text-[#B8B2AA] border border-white/5 hover:border-[#2EAD79]/30 transition-all cursor-pointer shadow-xs select-none"
               >
                 <div className="w-1.5 h-1.5 rounded-full bg-[#53C28B]"></div>
                 <span>{activeModel === 'Gemini-3.5-Flash' ? 'Gemini 3.5 Flash' : 'Gemini 1.5 Pro'}</span>
@@ -203,17 +203,17 @@ export default function ChatArea({
               </button>
 
               {showModelDropdown && (
-                <div className="absolute left-0 mt-2 w-52 rounded-2xl bg-[#242220] border border-white/5 p-2 shadow-xl z-30 animate-fade-in-up">
+                <div className="absolute left-0 mt-2 w-52 rounded-2xl bg-[#101815] border border-white/5 p-2 shadow-xl z-30 animate-fade-in-up">
                   <button 
                     onClick={() => { setActiveModel('Gemini-3.5-Flash'); setShowModelDropdown(false); }}
-                    className={`w-full text-left p-2.5 rounded-xl text-xs flex flex-col gap-0.5 cursor-pointer transition-colors ${activeModel === 'Gemini-3.5-Flash' ? 'bg-[#2A2724] text-[#F4F1EC]' : 'text-[#B8B2AA] hover:bg-[#2A2724]/40'}`}
+                    className={`w-full text-left p-2.5 rounded-xl text-xs flex flex-col gap-0.5 cursor-pointer transition-colors ${activeModel === 'Gemini-3.5-Flash' ? 'bg-[#182320] text-[#F4F1EC]' : 'text-[#B8B2AA] hover:bg-[#182320]/40'}`}
                   >
                     <span className="font-semibold text-white">Gemini 3.5 Flash</span>
                     <span className="text-[9px] opacity-65">Ultra-fast, responsive multimodal AI. Latest optimized release.</span>
                   </button>
                   <button 
                     onClick={() => { setActiveModel('Gemini-1.5-Pro'); setShowModelDropdown(false); }}
-                    className={`w-full text-left p-2.5 rounded-xl text-xs flex flex-col gap-0.5 mt-1 cursor-pointer transition-colors ${activeModel === 'Gemini-1.5-Pro' ? 'bg-[#2A2724] text-[#F4F1EC]' : 'text-[#B8B2AA] hover:bg-[#2A2724]/40'}`}
+                    className={`w-full text-left p-2.5 rounded-xl text-xs flex flex-col gap-0.5 mt-1 cursor-pointer transition-colors ${activeModel === 'Gemini-1.5-Pro' ? 'bg-[#182320] text-[#F4F1EC]' : 'text-[#B8B2AA] hover:bg-[#182320]/40'}`}
                   >
                     <span className="font-semibold text-white">Gemini 1.5 Pro</span>
                     <span className="text-[9px] opacity-65">State-of-the-art reasoning for complex multi-step coding and analysis.</span>
@@ -227,48 +227,48 @@ export default function ChatArea({
               onClick={() => setIsDeepThink(!isDeepThink)}
               className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider transition-all cursor-pointer shadow-xs select-none border ${
                 isDeepThink
-                  ? 'bg-[#D97A5A]/15 text-[#E2C39B] border-[#D97A5A]/35 hover:bg-[#D97A5A]/25'
-                  : 'bg-[#2A2724] text-[#7E7871] border-white/5 hover:text-[#B8B2AA]'
+                  ? 'bg-[#10B981]/15 text-[#A7F3D0] border-[#2EAD79]/35 hover:bg-[#10B981]/25'
+                  : 'bg-[#182320] text-[#7E7871] border-white/5 hover:text-[#B8B2AA]'
               }`}
               title="Toggle Deep Thought reasoning mode"
             >
-              <Sliders size={10} className={`${isDeepThink ? 'animate-pulse text-[#D97A5A]' : ''}`} />
+              <Sliders size={10} className={`${isDeepThink ? 'animate-pulse text-[#2EAD79]' : ''}`} />
               <span>Deep Think</span>
-              <div className={`w-1.5 h-1.5 rounded-full ${isDeepThink ? 'bg-[#D97A5A] animate-pulse' : 'bg-[#7E7871]/40'}`}></div>
+              <div className={`w-1.5 h-1.5 rounded-full ${isDeepThink ? 'bg-[#10B981] animate-pulse' : 'bg-[#7E7871]/40'}`}></div>
             </button>
 
             {/* Font Selector Rounded Pill */}
             <div className="relative">
               <button 
                 onClick={() => setShowFontDropdown(!showFontDropdown)}
-                className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#2A2724] text-[10px] font-bold uppercase tracking-wider text-[#B8B2AA] border border-white/5 hover:border-[#D97A5A]/35 hover:text-[#F4F1EC] transition-all cursor-pointer shadow-xs select-none"
+                className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#182320] text-[10px] font-bold uppercase tracking-wider text-[#B8B2AA] border border-white/5 hover:border-[#2EAD79]/35 hover:text-[#F4F1EC] transition-all cursor-pointer shadow-xs select-none"
                 title="Choose AI output font style"
               >
-                <Type size={10} className="text-[#D97A5A]" />
+                <Type size={10} className="text-[#2EAD79]" />
                 <span>Font: {chatFont}</span>
                 <ChevronDown size={10} className="opacity-60" />
               </button>
 
               {showFontDropdown && (
-                <div className="absolute left-0 mt-2 w-52 rounded-2xl bg-[#242220] border border-white/5 p-2 shadow-xl z-30 animate-fade-in-up">
+                <div className="absolute left-0 mt-2 w-52 rounded-2xl bg-[#101815] border border-white/5 p-2 shadow-xl z-30 animate-fade-in-up">
                   <div className="px-2 py-1 mb-1 text-[9px] font-bold uppercase tracking-widest text-[#7E7871]">AI-Generated Font</div>
                   <button 
                     onClick={() => { setChatFont('serif'); localStorage.setItem('omnimind_chat_font', 'serif'); setShowFontDropdown(false); }}
-                    className={`w-full text-left p-2 rounded-xl text-xs flex flex-col gap-0.5 cursor-pointer transition-colors ${chatFont === 'serif' ? 'bg-[#2A2724] text-[#F4F1EC]' : 'text-[#B8B2AA] hover:bg-[#2A2724]/40'}`}
+                    className={`w-full text-left p-2 rounded-xl text-xs flex flex-col gap-0.5 cursor-pointer transition-colors ${chatFont === 'serif' ? 'bg-[#182320] text-[#F4F1EC]' : 'text-[#B8B2AA] hover:bg-[#182320]/40'}`}
                   >
                     <span className="font-semibold text-white font-serif">Warm Literary Serif</span>
                     <span className="text-[9px] opacity-65">Lora. Premium editorial elegance and absolute comfort for reading.</span>
                   </button>
                   <button 
                     onClick={() => { setChatFont('sans'); localStorage.setItem('omnimind_chat_font', 'sans'); setShowFontDropdown(false); }}
-                    className={`w-full text-left p-2 rounded-xl text-xs flex flex-col gap-0.5 mt-1 cursor-pointer transition-colors ${chatFont === 'sans' ? 'bg-[#2A2724] text-[#F4F1EC]' : 'text-[#B8B2AA] hover:bg-[#2A2724]/40'}`}
+                    className={`w-full text-left p-2 rounded-xl text-xs flex flex-col gap-0.5 mt-1 cursor-pointer transition-colors ${chatFont === 'sans' ? 'bg-[#182320] text-[#F4F1EC]' : 'text-[#B8B2AA] hover:bg-[#182320]/40'}`}
                   >
                     <span className="font-semibold text-white font-sans">Modern Minimalist Sans</span>
                     <span className="text-[9px] opacity-65">Plus Jakarta Sans. Sleek, clean, fluid, and highly responsive.</span>
                   </button>
                   <button 
                     onClick={() => { setChatFont('mono'); localStorage.setItem('omnimind_chat_font', 'mono'); setShowFontDropdown(false); }}
-                    className={`w-full text-left p-2 rounded-xl text-xs flex flex-col gap-0.5 mt-1 cursor-pointer transition-colors ${chatFont === 'mono' ? 'bg-[#2A2724] text-[#F4F1EC]' : 'text-[#B8B2AA] hover:bg-[#2A2724]/40'}`}
+                    className={`w-full text-left p-2 rounded-xl text-xs flex flex-col gap-0.5 mt-1 cursor-pointer transition-colors ${chatFont === 'mono' ? 'bg-[#182320] text-[#F4F1EC]' : 'text-[#B8B2AA] hover:bg-[#182320]/40'}`}
                   >
                     <span className="font-semibold text-white font-mono">Technical Developer Mono</span>
                     <span className="text-[9px] opacity-65">JetBrains Mono. Ultra-precise, structured, perfect for coding & logic.</span>
@@ -286,8 +286,8 @@ export default function ChatArea({
             onClick={() => setShowSettings(!showSettings)}
             className={`p-2.5 rounded-xl border transition-all cursor-pointer ${
               showSettings 
-                ? 'bg-[#2A2724] border-[#D97A5A]/40 text-[#D97A5A]' 
-                : 'bg-transparent border-transparent text-[#B8B2AA] hover:bg-[#2A2724] hover:text-[#F4F1EC]'
+                ? 'bg-[#182320] border-[#2EAD79]/40 text-[#2EAD79]' 
+                : 'bg-transparent border-transparent text-[#B8B2AA] hover:bg-[#182320] hover:text-[#F4F1EC]'
             }`}
             title="Configure AI Persona"
           >
@@ -301,11 +301,11 @@ export default function ChatArea({
         
         {/* Settings Panel styled with Premium dark theme */}
         {showSettings && (
-          <div className="absolute top-0 inset-x-0 bg-[#242220] border-b border-white/5 z-20 p-6 shadow-xl transition-all duration-250 animate-slide-down">
+          <div className="absolute top-0 inset-x-0 bg-[#101815] border-b border-white/5 z-20 p-6 shadow-xl transition-all duration-250 animate-slide-down">
             <div className="max-w-3xl mx-auto">
               <div className="flex items-center justify-between mb-4 pb-2 border-b border-white/5">
                 <div className="flex items-center gap-2 text-[#F4F1EC]">
-                  <Sliders size={15} className="text-[#D97A5A]" />
+                  <Sliders size={15} className="text-[#2EAD79]" />
                   <span className="serif-title font-medium text-sm">Configure AI Persona</span>
                 </div>
                 <button 
@@ -326,8 +326,8 @@ export default function ChatArea({
                       onClick={() => setSystemInstruction(preset.instruction)}
                       className={`w-full text-left p-2.5 rounded-xl text-xs transition-all border cursor-pointer ${
                         systemInstruction === preset.instruction
-                          ? 'bg-[#2A2724] border-[#D97A5A]/35 text-[#F4F1EC] font-medium shadow-xs'
-                          : 'bg-[#1B1A18]/40 border-white/5 text-[#B8B2AA] hover:bg-[#2A2724]/50'
+                          ? 'bg-[#182320] border-[#2EAD79]/35 text-[#F4F1EC] font-medium shadow-xs'
+                          : 'bg-[#0A100E]/40 border-white/5 text-[#B8B2AA] hover:bg-[#182320]/50'
                       }`}
                     >
                       <span className="block font-semibold">{preset.name}</span>
@@ -345,11 +345,11 @@ export default function ChatArea({
                       onChange={(e) => setSystemInstruction(e.target.value)}
                       placeholder="Instruct the AI on how to act, talk, or format replies..."
                       rows={4}
-                      className="w-full p-3 bg-[#1B1A18] border border-white/5 rounded-2xl text-xs text-[#F4F1EC] placeholder-[#7E7871] focus:outline-hidden focus:border-[#D97A5A]/40 resize-none"
+                      className="w-full p-3 bg-[#0A100E] border border-white/5 rounded-2xl text-xs text-[#F4F1EC] placeholder-[#7E7871] focus:outline-hidden focus:border-[#2EAD79]/40 resize-none"
                     />
                   </div>
                   <p className="text-[10px] text-[#7E7871] flex items-center gap-1.5">
-                    <Info size={12} className="text-[#D7A657]" />
+                    <Info size={12} className="text-[#2EAD79]" />
                     <span>These instructions alter how the model generates explanations and formats responses.</span>
                   </p>
                 </div>
@@ -364,11 +364,22 @@ export default function ChatArea({
           className="flex-1 overflow-y-auto px-6 py-8 md:px-12 space-y-10 scrollbar-thin"
         >
           {error && (
-            <div className="max-w-2xl mx-auto p-4.5 rounded-2xl border border-[#E26868]/20 bg-[#E26868]/5 text-[#F4F1EC] text-sm flex gap-3 items-start animate-fade-in-up">
-              <CircleAlert size={18} className="shrink-0 text-[#E26868] mt-0.5" />
-              <div>
-                <span className="font-semibold block mb-0.5 text-white">System Notice</span>
-                <p className="text-xs text-[#B8B2AA] leading-relaxed">{error}</p>
+            <div className="max-w-2xl mx-auto p-5 rounded-2xl border border-[#E26868]/30 bg-[#E26868]/5 text-[#F4F1EC] text-sm flex gap-3.5 items-start animate-fade-in-up shadow-xl shadow-red-950/20">
+              <CircleAlert size={20} className="shrink-0 text-[#E26868] mt-0.5" />
+              <div className="flex-1">
+                <span className="font-semibold block mb-1 text-white text-[15px]">System Notice</span>
+                <p className="text-xs text-[#B8B2AA] leading-relaxed mb-1">{error}</p>
+                {(error.includes("GenAI backend") || error.includes("GEMINI_API_KEY") || error.includes("API secrets")) && (
+                  <div className="mt-3.5 pt-3.5 border-t border-white/5 text-xs text-[#B8B2AA]/90 space-y-2.5 animate-fade-in-up">
+                    <p className="font-semibold text-[#A7F3D0]">How to configure your API secrets in 3 simple steps:</p>
+                    <ol className="list-decimal pl-4.5 space-y-1.5 text-[11px] text-[#B8B2AA]">
+                      <li>Open the <strong className="text-white">Settings</strong> panel (usually in the upper-right corner or Settings menu) of Google AI Studio builder workspace.</li>
+                      <li>Go to the <strong className="text-white">Secrets</strong> tab, click <strong className="text-[#2EAD79]">Add Secret</strong>, and set the name exactly to <code className="px-1.5 py-0.5 rounded bg-white/5 border border-white/10 text-white font-mono font-semibold">GEMINI_API_KEY</code>.</li>
+                      <li>Paste your personal Google Gemini API Key in the value field and save it.</li>
+                    </ol>
+                    <p className="text-[10px] text-[#7E7871] pt-1">Once saved, re-publish/re-deploy your site. Your custom backend proxy will automatically retrieve the secret securely and resume operation!</p>
+                  </div>
+                )}
               </div>
             </div>
           )}
@@ -386,11 +397,11 @@ export default function ChatArea({
                   >
                     {/* Perfect Outlined Premium Avatars */}
                     {isUser ? (
-                      <div className="w-10 h-10 rounded-2xl bg-[#D97A5A] text-white flex-shrink-0 flex items-center justify-center font-bold text-xs select-none shadow-sm shadow-[#D97A5A]/15">
+                      <div className="w-10 h-10 rounded-2xl bg-[#10B981] text-white flex-shrink-0 flex items-center justify-center font-bold text-xs select-none shadow-sm shadow-[#10B981]/15">
                         KS
                       </div>
                     ) : (
-                      <div className="w-10 h-10 rounded-2xl bg-white/5 border border-white/10 text-[#D97A5A] flex-shrink-0 flex items-center justify-center">
+                      <div className="w-10 h-10 rounded-2xl bg-white/5 border border-white/10 text-[#2EAD79] flex-shrink-0 flex items-center justify-center">
                         <Bot size={18} />
                       </div>
                     )}
@@ -403,7 +414,7 @@ export default function ChatArea({
 
                       {/* Bubble content - User has soft card; AI is elegantly clean and unbubbled */}
                       {isUser ? (
-                        <div className="bg-[#2A2724] border border-white/5 rounded-3xl rounded-tr-sm p-5 text-[14.5px] text-[#F4F1EC] leading-relaxed shadow-sm whitespace-pre-wrap break-words text-left">
+                        <div className="bg-[#182320] border border-white/5 rounded-3xl rounded-tr-sm p-5 text-[14.5px] text-[#F4F1EC] text-left leading-relaxed shadow-sm whitespace-pre-wrap break-words">
                           {m.text}
                         </div>
                       ) : (
@@ -428,18 +439,18 @@ export default function ChatArea({
               {/* Real-time Streaming Generator Bubble */}
               {isGenerating && (
                 <div className="flex gap-6 md:gap-8 justify-start animate-pulse">
-                  <div className="w-10 h-10 rounded-2xl bg-white/5 border border-white/10 text-[#D97A5A] flex-shrink-0 flex items-center justify-center">
+                  <div className="w-10 h-10 rounded-2xl bg-white/5 border border-white/10 text-[#2EAD79] flex-shrink-0 flex items-center justify-center">
                     <Bot size={18} />
                   </div>
                   <div className="flex flex-col items-start max-w-[80%] space-y-2">
                     <span className="text-[9px] text-[#7E7871] font-bold uppercase tracking-widest px-1">
                       OmniMind • streaming...
                     </span>
-                    <div className="bg-[#2A2724]/40 border border-white/5 px-5 py-3.5 rounded-3xl rounded-tl-sm flex items-center justify-center min-w-[70px]">
+                    <div className="bg-[#182320]/40 border border-white/5 px-5 py-3.5 rounded-3xl rounded-tl-sm flex items-center justify-center min-w-[70px]">
                       <div className="flex gap-1.5">
-                        <div className="w-1.5 h-1.5 bg-[#D97A5A] rounded-full animate-bounce [animation-delay:-0.3s]"></div>
-                        <div className="w-1.5 h-1.5 bg-[#D97A5A] rounded-full animate-bounce [animation-delay:-0.15s]"></div>
-                        <div className="w-1.5 h-1.5 bg-[#D97A5A] rounded-full animate-bounce"></div>
+                        <div className="w-1.5 h-1.5 bg-[#10B981] rounded-full animate-bounce [animation-delay:-0.3s]"></div>
+                        <div className="w-1.5 h-1.5 bg-[#10B981] rounded-full animate-bounce [animation-delay:-0.15s]"></div>
+                        <div className="w-1.5 h-1.5 bg-[#10B981] rounded-full animate-bounce"></div>
                       </div>
                     </div>
                   </div>
@@ -452,7 +463,7 @@ export default function ChatArea({
         </div>
 
         {/* Floating rounded chat area input with inner shadows & accessory triggers */}
-        <div className="p-6 md:p-8 shrink-0 bg-gradient-to-t from-[#1B1A18] via-[#1B1A18] to-transparent sticky bottom-0">
+        <div className="p-6 md:p-8 shrink-0 bg-gradient-to-t from-[#0A100E] via-[#0A100E] to-transparent sticky bottom-0">
           <div className="max-w-3xl mx-auto">
             
             {/* Attachment preview panel */}
@@ -461,9 +472,9 @@ export default function ChatArea({
                 {attachedFiles.map(file => (
                   <div 
                     key={file.id} 
-                    className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-[#2A2724] border border-white/5 text-[11px] text-[#F4F1EC] shadow-xs animate-fade-in-up"
+                    className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-[#182320] border border-white/5 text-[11px] text-[#F4F1EC] shadow-xs animate-fade-in-up"
                   >
-                    <FileText size={12} className="text-[#D97A5A]" />
+                    <FileText size={12} className="text-[#2EAD79]" />
                     <span className="truncate max-w-[150px]">{file.name}</span>
                     <span className="text-[#7E7871] text-[9px]">({file.size})</span>
                     <button 
@@ -480,20 +491,20 @@ export default function ChatArea({
 
             {/* Simulated listening pulsing wave */}
             {isRecording && (
-              <div className="flex items-center gap-3.5 px-4 py-2.5 mb-3 rounded-2xl bg-[#D97A5A]/10 border border-[#D97A5A]/20 text-xs text-[#D97A5A] justify-center animate-pulse">
+              <div className="flex items-center gap-3.5 px-4 py-2.5 mb-3 rounded-2xl bg-[#10B981]/10 border border-[#2EAD79]/20 text-xs text-[#2EAD79] justify-center animate-pulse">
                 <Volume2 size={14} className="animate-bounce" />
                 <span className="font-semibold tracking-wide uppercase text-[10px]">OmniMind Voice listening ... Speak now</span>
               </div>
             )}
 
-            <form onSubmit={handleSubmit} className="relative flex items-center bg-[#2A2724] rounded-3xl border border-white/5 shadow-[inset_0_2px_4px_rgba(0,0,0,0.25)] hover:border-white/10 transition-all p-1.5">
+            <form onSubmit={handleSubmit} className="relative flex items-center bg-[#182320] rounded-3xl border border-white/5 shadow-[inset_0_2px_4px_rgba(0,0,0,0.25)] hover:border-white/10 transition-all p-1.5">
               
               {/* Left accessories: Attachment paperclip */}
               <button
                 type="button"
                 onClick={() => fileInputRef.current?.click()}
                 disabled={isGenerating || isRecording}
-                className="p-3 text-[#B8B2AA] hover:text-[#F4F1EC] hover:bg-[#1B1A18]/40 rounded-2xl transition-colors cursor-pointer select-none"
+                className="p-3 text-[#B8B2AA] hover:text-[#F4F1EC] hover:bg-[#0A100E]/40 rounded-2xl transition-colors cursor-pointer select-none"
                 title="Attach Files"
               >
                 <Paperclip size={18} />
@@ -518,8 +529,8 @@ export default function ChatArea({
                 disabled={isGenerating}
                 className={`p-3 rounded-2xl transition-all cursor-pointer select-none mr-1 ${
                   isRecording 
-                    ? 'bg-[#D97A5A] text-white scale-110 shadow-lg shadow-[#D97A5A]/20' 
-                    : 'text-[#B8B2AA] hover:text-[#F4F1EC] hover:bg-[#1B1A18]/40'
+                    ? 'bg-[#10B981] text-white scale-110 shadow-lg shadow-[#10B981]/20' 
+                    : 'text-[#B8B2AA] hover:text-[#F4F1EC] hover:bg-[#0A100E]/40'
                 }`}
                 title="Voice Input"
               >
@@ -532,7 +543,7 @@ export default function ChatArea({
                 disabled={(!input.trim() && attachedFiles.length === 0) || isGenerating}
                 className={`p-3 rounded-2xl transition-all duration-250 cursor-pointer ${
                   (input.trim() || attachedFiles.length > 0) && !isGenerating
-                    ? 'bg-[#D97A5A] text-white hover:bg-[#E58B6C] hover:scale-105 active:scale-95'
+                    ? 'bg-[#10B981] text-white hover:bg-[#059669] hover:scale-105 active:scale-95'
                     : 'bg-transparent text-[#7E7871]/40'
                 }`}
               >
@@ -586,21 +597,21 @@ function ThoughtBlock({ thought, isThinking }: ThoughtBlockProps) {
   if (!thought) return null;
 
   return (
-    <div className="mb-6 rounded-2xl border border-white/5 bg-[#252220]/40 overflow-hidden transition-all duration-300">
+    <div className="mb-6 rounded-2xl border border-white/5 bg-[#15211E]/40 overflow-hidden transition-all duration-300">
       <button
         type="button"
         onClick={() => setIsCollapsed(!isCollapsed)}
-        className="w-full flex items-center justify-between px-4 py-3 bg-[#252220]/80 hover:bg-[#2D2A27] active:bg-[#34312E] transition-colors text-left select-none cursor-pointer"
+        className="w-full flex items-center justify-between px-4 py-3 bg-[#15211E]/80 hover:bg-[#1A2E29] active:bg-[#203D36] transition-colors text-left select-none cursor-pointer"
       >
         <div className="flex items-center gap-2.5">
-          <div className="p-1 rounded-lg bg-[#D97A5A]/10 border border-[#D97A5A]/20 text-[#D97A5A]">
+          <div className="p-1 rounded-lg bg-[#10B981]/10 border border-[#2EAD79]/20 text-[#2EAD79]">
             <Sparkles size={12} className={isThinking ? "animate-spin" : ""} style={{ animationDuration: '4s' }} />
           </div>
-          <span className="text-[10px] font-bold uppercase tracking-widest text-[#E2C39B]">Thinking Process</span>
+          <span className="text-[10px] font-bold uppercase tracking-widest text-[#A7F3D0]">Thinking Process</span>
         </div>
         <div className="flex items-center gap-2">
           {isThinking ? (
-            <span className="text-[9px] text-[#D97A5A] font-bold tracking-widest uppercase animate-pulse">Thinking...</span>
+            <span className="text-[9px] text-[#2EAD79] font-bold tracking-widest uppercase animate-pulse">Thinking...</span>
           ) : (
             <span className="text-[9px] text-[#7E7871] font-bold tracking-widest uppercase">Verified Logic</span>
           )}
@@ -611,7 +622,7 @@ function ThoughtBlock({ thought, isThinking }: ThoughtBlockProps) {
         </div>
       </button>
       {!isCollapsed && (
-        <div className="px-5 pb-4 pt-3 border-t border-white/5 text-[12px] text-[#B8B2AA]/80 font-mono leading-relaxed whitespace-pre-wrap select-text max-h-80 overflow-y-auto scrollbar-none bg-[#1F1D1B]/30">
+        <div className="px-5 pb-4 pt-3 border-t border-white/5 text-[12px] text-[#B8B2AA]/80 font-mono leading-relaxed whitespace-pre-wrap select-text max-h-80 overflow-y-auto scrollbar-none bg-[#131E1B]/30">
           {thought}
         </div>
       )}

@@ -11,40 +11,40 @@ export default function WelcomeScreen({ onSelectPrompt }: WelcomeScreenProps) {
       icon: <Code size={18} />,
       label: "Code & Debug",
       prompt: "Write an elegant TypeScript implementation of a binary search tree with operations to insert, delete, and find nodes.",
-      bgColor: "bg-[#2A2724]/60",
+      bgColor: "bg-[#182320]/60",
       textColor: "text-[#F4F1EC]",
-      iconColor: "text-[#D97A5A]"
+      iconColor: "text-[#2EAD79]"
     },
     {
       icon: <Lightbulb size={18} />,
       label: "Explain Concepts",
       prompt: "Explain the concept of quantum computing and superposition using a simple, intuitive analogy for a teenager.",
-      bgColor: "bg-[#2A2724]/60",
+      bgColor: "bg-[#182320]/60",
       textColor: "text-[#F4F1EC]",
-      iconColor: "text-[#D97A5A]"
+      iconColor: "text-[#2EAD79]"
     },
     {
       icon: <Map size={18} />,
       label: "Plan & Travel",
       prompt: "Create a 3-day itinerary for a weekend getaway in Kyoto, Japan, focusing on scenic historical temples, tea shops, and local culinary highlights.",
-      bgColor: "bg-[#2A2724]/60",
+      bgColor: "bg-[#182320]/60",
       textColor: "text-[#F4F1EC]",
-      iconColor: "text-[#D97A5A]"
+      iconColor: "text-[#2EAD79]"
     },
     {
       icon: <PenTool size={18} />,
       label: "Write & Draft",
       prompt: "Draft an engaging, professional welcome email for new members joining a community dedicated to sustainable living and green tech.",
-      bgColor: "bg-[#2A2724]/60",
+      bgColor: "bg-[#182320]/60",
       textColor: "text-[#F4F1EC]",
-      iconColor: "text-[#D97A5A]"
+      iconColor: "text-[#2EAD79]"
     }
   ];
 
   return (
     <div className="flex flex-col items-center justify-center max-w-3xl mx-auto px-6 py-12 md:py-24 text-center select-none animate-fade-in-up">
       {/* Premium Minimal Icon */}
-      <div className="mb-8 flex items-center justify-center w-14 h-14 rounded-2xl bg-[#2A2724] border border-white/5 text-[#D97A5A] shadow-md">
+      <div className="mb-8 flex items-center justify-center w-14 h-14 rounded-2xl bg-[#182320] border border-white/5 text-[#2EAD79] shadow-md">
         <Sparkles size={24} className="opacity-80" />
       </div>
 
@@ -61,7 +61,7 @@ export default function WelcomeScreen({ onSelectPrompt }: WelcomeScreenProps) {
           <button
             key={idx}
             onClick={() => onSelectPrompt(item.prompt)}
-            className="flex flex-col items-start p-6 text-left rounded-2xl border border-white/5 bg-[#2A2724]/35 hover:bg-[#2A2724]/80 hover:border-[#D97A5A]/30 transition-all duration-250 group cursor-pointer shadow-xs hover:scale-102"
+            className="flex flex-col items-start p-6 text-left rounded-2xl border border-white/5 bg-[#182320]/35 hover:bg-[#182320]/80 hover:border-[#2EAD79]/30 transition-all duration-250 group cursor-pointer shadow-xs hover:scale-102"
           >
             <div className={`p-2.5 rounded-xl ${item.bgColor} ${item.iconColor} mb-4 transition-transform group-hover:scale-105 border border-white/5`}>
               {item.icon}

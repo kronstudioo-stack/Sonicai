@@ -83,21 +83,21 @@ export default function Sidebar({
 
       {/* Sidebar Main Panel */}
       <aside 
-        className={`fixed inset-y-0 left-0 z-40 flex flex-col w-72 bg-[#242220] border-r border-white/5 transition-transform duration-300 transform md:translate-x-0 md:static shrink-0 ${
+        className={`fixed inset-y-0 left-0 z-40 flex flex-col w-72 bg-[#101815] border-r border-white/5 transition-transform duration-300 transform md:translate-x-0 md:static shrink-0 ${
           isSidebarOpen ? 'translate-x-0' : '-translate-x-full'
         }`}
       >
         {/* Top Header */}
         <div className="flex items-center justify-between h-16 px-6 border-b border-white/5">
           <div className="flex items-center gap-2.5">
-            <div className="flex items-center justify-center w-8 h-8 rounded-xl bg-[#2A2724] border border-white/5 text-[#D97A5A]">
+            <div className="flex items-center justify-center w-8 h-8 rounded-xl bg-[#182320] border border-white/5 text-[#2EAD79]">
               <Sparkles size={16} />
             </div>
             <span className="serif-title font-semibold text-[#F4F1EC] text-lg tracking-tight">OmniMind</span>
           </div>
           <button 
             onClick={() => setIsSidebarOpen(false)}
-            className="md:hidden p-1.5 rounded-xl hover:bg-[#2A2724] text-[#B8B2AA] cursor-pointer"
+            className="md:hidden p-1.5 rounded-xl hover:bg-[#182320] text-[#B8B2AA] cursor-pointer"
           >
             <ChevronLeft size={18} />
           </button>
@@ -112,9 +112,9 @@ export default function Sidebar({
                 setIsSidebarOpen(false);
               }
             }}
-            className="flex items-center justify-center gap-3 w-full px-4 py-3 bg-[#2A2724] hover:bg-[#242220] hover:scale-102 hover:shadow-lg active:scale-98 text-[#F4F1EC] border border-white/5 rounded-2xl font-medium text-xs tracking-wider uppercase transition-all duration-250 cursor-pointer"
+            className="flex items-center justify-center gap-3 w-full px-4 py-3 bg-[#182320] hover:bg-[#101815] hover:scale-102 hover:shadow-lg active:scale-98 text-[#F4F1EC] border border-white/5 rounded-2xl font-medium text-xs tracking-wider uppercase transition-all duration-250 cursor-pointer"
           >
-            <Plus size={15} className="text-[#D97A5A]" />
+            <Plus size={15} className="text-[#2EAD79]" />
             <span>New Chat</span>
           </button>
         </div>
@@ -128,7 +128,7 @@ export default function Sidebar({
               placeholder="Search conversations..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-10 pr-8 py-2.5 bg-[#1B1A18] border border-white/5 rounded-xl text-xs text-[#F4F1EC] placeholder-[#7E7871] focus:outline-hidden focus:border-[#D97A5A]/50 transition-colors"
+              className="w-full pl-10 pr-8 py-2.5 bg-[#0A100E] border border-white/5 rounded-xl text-xs text-[#F4F1EC] placeholder-[#7E7871] focus:outline-hidden focus:border-[#2EAD79]/50 transition-colors"
             />
             {searchQuery && (
               <button 
@@ -166,12 +166,12 @@ export default function Sidebar({
                   }}
                   className={`group relative flex items-center justify-between px-3.5 py-3 rounded-xl cursor-pointer transition-all duration-200 ${
                     isActive 
-                      ? 'bg-[#2A2724] border border-white/5 text-[#F4F1EC]' 
-                      : 'hover:bg-[#2A2724]/40 text-[#B8B2AA] hover:text-[#F4F1EC]'
+                      ? 'bg-[#182320] border border-white/5 text-[#F4F1EC]' 
+                      : 'hover:bg-[#182320]/40 text-[#B8B2AA] hover:text-[#F4F1EC]'
                   }`}
                 >
                   <div className="flex items-center gap-3 min-w-0 flex-1">
-                    <MessageSquare size={15} className={`shrink-0 ${isActive ? 'text-[#D97A5A]' : 'text-[#7E7871] group-hover:text-[#B8B2AA]'}`} />
+                    <MessageSquare size={15} className={`shrink-0 ${isActive ? 'text-[#2EAD79]' : 'text-[#7E7871] group-hover:text-[#B8B2AA]'}`} />
                     
                     {isEditing ? (
                       <input
@@ -184,7 +184,7 @@ export default function Sidebar({
                         }}
                         autoFocus
                         onClick={(e) => e.stopPropagation()}
-                        className="w-full bg-[#1B1A18] px-1.5 py-0.5 border border-[#D97A5A] rounded text-xs text-[#F4F1EC] focus:outline-hidden"
+                        className="w-full bg-[#0A100E] px-1.5 py-0.5 border border-[#2EAD79] rounded text-xs text-[#F4F1EC] focus:outline-hidden"
                       />
                     ) : (
                       <span className="text-xs font-medium truncate pr-6 tracking-wide">
@@ -199,13 +199,13 @@ export default function Sidebar({
                       <>
                         <button
                           onClick={(e) => saveRename(c.id, e)}
-                          className="p-1 rounded text-[#53C28B] hover:bg-[#1B1A18] cursor-pointer"
+                          className="p-1 rounded text-[#53C28B] hover:bg-[#0A100E] cursor-pointer"
                         >
                           <Check size={12} />
                         </button>
                         <button
                           onClick={cancelRename}
-                          className="p-1 rounded text-[#E26868] hover:bg-[#1B1A18] cursor-pointer"
+                          className="p-1 rounded text-[#E26868] hover:bg-[#0A100E] cursor-pointer"
                         >
                           <X size={12} />
                         </button>
@@ -220,8 +220,8 @@ export default function Sidebar({
                           }}
                           className={`p-1 rounded transition-colors cursor-pointer ${
                             c.isPinned 
-                              ? 'text-[#D7A657] hover:bg-[#1B1A18]' 
-                              : 'text-[#7E7871] hover:text-[#D7A657] hover:bg-[#1B1A18]'
+                              ? 'text-[#D7A657] hover:bg-[#0A100E]' 
+                              : 'text-[#7E7871] hover:text-[#D7A657] hover:bg-[#0A100E]'
                           }`}
                           title={c.isPinned ? "Unpin chat" : "Pin chat"}
                         >
@@ -231,7 +231,7 @@ export default function Sidebar({
                         {/* Rename Button */}
                         <button
                           onClick={(e) => startEditing(c.id, c.title, e)}
-                          className="p-1 rounded text-[#7E7871] hover:text-[#D97A5A] hover:bg-[#1B1A18] transition-colors cursor-pointer"
+                          className="p-1 rounded text-[#7E7871] hover:text-[#2EAD79] hover:bg-[#0A100E] transition-colors cursor-pointer"
                           title="Rename chat"
                         >
                           <Edit2 size={12} />
@@ -243,7 +243,7 @@ export default function Sidebar({
                             e.stopPropagation();
                             onDeleteConversation(c.id);
                           }}
-                          className="p-1 rounded text-[#7E7871] hover:text-[#E26868] hover:bg-[#1B1A18] transition-colors cursor-pointer"
+                          className="p-1 rounded text-[#7E7871] hover:text-[#E26868] hover:bg-[#0A100E] transition-colors cursor-pointer"
                           title="Delete chat"
                         >
                           <Trash2 size={12} />
@@ -270,7 +270,7 @@ export default function Sidebar({
         </div>
 
         {/* Bottom Actions and Profile */}
-        <div className="mt-auto border-t border-white/5 bg-[#242220]">
+        <div className="mt-auto border-t border-white/5 bg-[#101815]">
           <div className="p-4 space-y-3">
             <button
               onClick={() => {
@@ -285,8 +285,8 @@ export default function Sidebar({
             </button>
 
             {/* Profile badge styled like the luxury template */}
-            <div className="flex items-center gap-3 p-2.5 rounded-2xl bg-[#1B1A18]/50 border border-white/5">
-              <div className="w-8 h-8 rounded-full bg-gradient-to-tr from-[#D97A5A] to-[#E58B6C] flex items-center justify-center text-xs font-bold text-[#F4F1EC] shrink-0 shadow-sm select-none">
+            <div className="flex items-center gap-3 p-2.5 rounded-2xl bg-[#0A100E]/50 border border-white/5">
+              <div className="w-8 h-8 rounded-full bg-gradient-to-tr from-[#10B981] to-[#34D399] flex items-center justify-center text-xs font-bold text-[#F4F1EC] shrink-0 shadow-sm select-none">
                 KS
               </div>
               <div className="flex-1 min-w-0 text-left">
