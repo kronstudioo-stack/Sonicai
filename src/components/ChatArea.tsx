@@ -56,7 +56,7 @@ export default function ChatArea({
 }: ChatAreaProps) {
   const [input, setInput] = useState('');
   const [showSettings, setShowSettings] = useState(false);
-  const [activeModel, setActiveModel] = useState<'Gemini-3.5-Flash' | 'Llama-3.3-70B' | 'Llama-3.1-8B'>('Llama-3.3-70B');
+  const [activeModel, setActiveModel] = useState<'Gemini-3.5-Flash' | 'Gemini-3.1-Flash-Lite'>('Gemini-3.5-Flash');
   const [showModelDropdown, setShowModelDropdown] = useState(false);
   const [isRecording, setIsRecording] = useState(false);
   const [attachedFiles, setAttachedFiles] = useState<AttachedFile[]>([]);
@@ -88,9 +88,7 @@ export default function ChatArea({
     const mappedModel = 
       activeModel === 'Gemini-3.5-Flash' 
         ? 'gemini-3.5-flash' 
-        : activeModel === 'Llama-3.3-70B' 
-          ? 'llama-3.3-70b-versatile' 
-          : 'llama-3.1-8b-instant';
+        : 'gemini-3.1-flash-lite';
     onSendMessage(finalMessage, isDeepThink, mappedModel);
     setInput('');
     setAttachedFiles([]);
@@ -206,10 +204,8 @@ export default function ChatArea({
                 <div className="w-1.5 h-1.5 rounded-full bg-[#53C28B]"></div>
                 <span>
                   {activeModel === 'Gemini-3.5-Flash' 
-                    ? 'Gemini 1.5 Flash' 
-                    : activeModel === 'Llama-3.3-70B' 
-                      ? 'Llama 3.3 70B' 
-                      : 'Llama 3.1 8B'}
+                    ? 'Gemini 3.5 Flash' 
+                    : 'Gemini 3.1 Flash Lite'}
                 </span>
                 <ChevronDown size={10} className="opacity-60" />
               </button>
@@ -220,22 +216,15 @@ export default function ChatArea({
                     onClick={() => { setActiveModel('Gemini-3.5-Flash'); setShowModelDropdown(false); }}
                     className={`w-full text-left p-2.5 rounded-xl text-xs flex flex-col gap-0.5 cursor-pointer transition-colors ${activeModel === 'Gemini-3.5-Flash' ? 'bg-[#182320] text-[#F4F1EC]' : 'text-[#B8B2AA] hover:bg-[#182320]/40'}`}
                   >
-                    <span className="font-semibold text-white">Gemini 1.5 Flash (Default)</span>
-                    <span className="text-[9px] opacity-65">Fast, multi-modal, and stable out-of-the-box model. No setup or API keys required!</span>
+                    <span className="font-semibold text-white">Gemini 3.5 Flash (Default)</span>
+                    <span className="text-[9px] opacity-65">Fast, highly intelligent, multi-modal model. Works out of the box with zero key setup!</span>
                   </button>
                   <button 
-                    onClick={() => { setActiveModel('Llama-3.3-70B'); setShowModelDropdown(false); }}
-                    className={`w-full text-left p-2.5 rounded-xl text-xs flex flex-col gap-0.5 mt-1 cursor-pointer transition-colors ${activeModel === 'Llama-3.3-70B' ? 'bg-[#182320] text-[#F4F1EC]' : 'text-[#B8B2AA] hover:bg-[#182320]/40'}`}
+                    onClick={() => { setActiveModel('Gemini-3.1-Flash-Lite'); setShowModelDropdown(false); }}
+                    className={`w-full text-left p-2.5 rounded-xl text-xs flex flex-col gap-0.5 mt-1 cursor-pointer transition-colors ${activeModel === 'Gemini-3.1-Flash-Lite' ? 'bg-[#182320] text-[#F4F1EC]' : 'text-[#B8B2AA] hover:bg-[#182320]/40'}`}
                   >
-                    <span className="font-semibold text-white">Llama 3.3 70B</span>
-                    <span className="text-[9px] opacity-65">State-of-the-art versatile 70B parameter model with great logical reasoning.</span>
-                  </button>
-                  <button 
-                    onClick={() => { setActiveModel('Llama-3.1-8B'); setShowModelDropdown(false); }}
-                    className={`w-full text-left p-2.5 rounded-xl text-xs flex flex-col gap-0.5 mt-1 cursor-pointer transition-colors ${activeModel === 'Llama-3.1-8B' ? 'bg-[#182320] text-[#F4F1EC]' : 'text-[#B8B2AA] hover:bg-[#182320]/40'}`}
-                  >
-                    <span className="font-semibold text-white">Llama 3.1 8B</span>
-                    <span className="text-[9px] opacity-65">Ultra-fast, efficient lightweight model optimized for high speed.</span>
+                    <span className="font-semibold text-white">Gemini 3.1 Flash Lite</span>
+                    <span className="text-[9px] opacity-65">Ultra-fast, lightweight model optimized for high responsiveness and speed.</span>
                   </button>
                 </div>
               )}
@@ -388,15 +377,15 @@ export default function ChatArea({
               <div className="flex-1">
                 <span className="font-semibold block mb-1 text-white text-[15px]">System Notice</span>
                 <p className="text-xs text-[#B8B2AA] leading-relaxed mb-1">{error}</p>
-                {(error.includes("Groq") || error.includes("GROQ_API_KEY") || error.includes("API secrets")) && (
+                {(error.includes("key") || error.includes("API_KEY") || error.includes("secrets")) && (
                   <div className="mt-3.5 pt-3.5 border-t border-white/5 text-xs text-[#B8B2AA]/90 space-y-2.5 animate-fade-in-up">
-                    <p className="font-semibold text-[#A7F3D0]">How to configure your API secrets in 3 simple steps:</p>
+                    <p className="font-semibold text-[#A7F3D0]">How to configure your Gemini API Key:</p>
                     <ol className="list-decimal pl-4.5 space-y-1.5 text-[11px] text-[#B8B2AA]">
-                      <li>Open the <strong className="text-white">Settings</strong> panel (usually in the upper-right corner or Settings menu) of Google AI Studio builder workspace.</li>
-                      <li>Go to the <strong className="text-white">Secrets</strong> tab, click <strong className="text-[#2EAD79]">Add Secret</strong>, and set the name exactly to <code className="px-1.5 py-0.5 rounded bg-white/5 border border-white/10 text-white font-mono font-semibold">GROQ_API_KEY</code>.</li>
-                      <li>Paste your personal Groq API Key in the value field and save it.</li>
+                      <li>Open the <strong className="text-white">Settings</strong> panel of Google AI Studio.</li>
+                      <li>Go to the <strong className="text-white">Secrets</strong> tab, click <strong className="text-[#2EAD79]">Add Secret</strong>, and set the name exactly to <code className="px-1.5 py-0.5 rounded bg-white/5 border border-white/10 text-white font-mono font-semibold">GEMINI_API_KEY</code>.</li>
+                      <li>Paste your personal Gemini API Key in the value field and save it.</li>
                     </ol>
-                    <p className="text-[10px] text-[#7E7871] pt-1">Once saved, re-publish/re-deploy your site. Your custom backend proxy will automatically retrieve the secret securely and resume operation!</p>
+                    <p className="text-[10px] text-[#7E7871] pt-1">Usually, this is fully automatic. Re-publish or re-deploy your site if the key isn't picked up automatically.</p>
                   </div>
                 )}
               </div>

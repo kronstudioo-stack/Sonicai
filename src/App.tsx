@@ -83,7 +83,7 @@ export default function App() {
       messages: [],
       createdAt: Date.now(),
       updatedAt: Date.now(),
-      model: "llama-3.3-70b-versatile",
+      model: "gemini-3.5-flash",
       isPinned: false
     };
     setConversations(prev => [newConv, ...prev]);
@@ -156,8 +156,8 @@ export default function App() {
     }
   };
 
-  // Handler: Send a message to the Groq Server-Sent Events chat route
-  const handleSendMessage = async (text: string, deepThink: boolean = false, model: string = "llama-3.3-70b-versatile") => {
+  // Handler: Send a message to the Gemini Server-Sent Events chat route
+  const handleSendMessage = async (text: string, deepThink: boolean = false, model: string = "gemini-3.5-flash") => {
     setError(null);
     let targetConvId = activeId;
     let targetConv = activeConversation;
